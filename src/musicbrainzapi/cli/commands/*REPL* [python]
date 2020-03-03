@@ -1,0 +1,20 @@
+Python 3.8.0 (default, Nov  3 2019, 22:15:08) 
+[Clang 10.0.1 (clang-1001.0.46.4)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>> match_check := False
+  File "<console>", line 1
+    match_check := False
+                ^
+SyntaxError: invalid syntax
+>>> if match_check := False:
+... print('false')
+  File "<console>", line 2
+    print('false')
+    ^
+IndentationError: expected an indented block
+>>> if match_check := False:
+... 	print(False)
+... 
+>>> if not match_check := False:
+... 	print(False)
