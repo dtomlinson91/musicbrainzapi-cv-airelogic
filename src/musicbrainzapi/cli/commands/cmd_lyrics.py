@@ -100,16 +100,16 @@ def cli(ctx, artist: str, country: Union[str, None]) -> None:
     """
     Search for lyrics of an Artist/Group.
     """
-    print(artist)
+    # print(artist)
     director = lyrics.LyricsClickDirector()
     builder = lyrics.LyricsBuilder()
     director.builder = builder
     director._get_initial_artists(artist, country)
     director._confirm_final_artist()
     director._set_artist_id_on_product()
-    builder.do_search_albumns()
-    builder.do_filter_albums_official()
-    builder.do_search_album_tracks()
+    director._search_for_all_tracks()
+    # builder.do_filter_albums_official()
+    # builder.do_search_album_tracks()
 
 
 if __name__ == '__main__':

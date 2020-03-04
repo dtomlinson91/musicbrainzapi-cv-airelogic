@@ -1,4 +1,12 @@
 [[package]]
+category = "main"
+description = "Addict is a dictionary whose items can be set using both attribute and item syntax."
+name = "addict"
+optional = false
+python-versions = "*"
+version = "2.2.1"
+
+[[package]]
 category = "dev"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 name = "appdirs"
@@ -201,6 +209,14 @@ version = ">=0.12"
 
 [package.extras]
 dev = ["pre-commit", "tox"]
+
+[[package]]
+category = "main"
+description = "Easy to use progress bars"
+name = "progress"
+optional = false
+python-versions = "*"
+version = "1.5"
 
 [[package]]
 category = "dev"
@@ -477,10 +493,14 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "40cc154211436945480756e120f8b39bb419e373bc51da5c6bb4d1ab72db47c5"
+content-hash = "50cff0758d9f4bfa77596b28f6f5f0c7f1db897b7c0d615071379c288b1d110d"
 python-versions = "^3.7"
 
 [metadata.files]
+addict = [
+    {file = "addict-2.2.1-py3-none-any.whl", hash = "sha256:1948c2a5d93ba6026eb91aef2c971234aaf72488a9c07ab8a7950f82ae30eea7"},
+    {file = "addict-2.2.1.tar.gz", hash = "sha256:f22493f056032f50e4931a82444fcba8ef74c8fc994c5d06aa546a1433c2b8b0"},
+]
 appdirs = [
     {file = "appdirs-1.4.3-py2.py3-none-any.whl", hash = "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"},
     {file = "appdirs-1.4.3.tar.gz", hash = "sha256:9e5896d1372858f8dd3344faf4e5014d21849c756c8d5701f78f8a103b372d92"},
@@ -555,6 +575,9 @@ pathspec = [
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
+]
+progress = [
+    {file = "progress-1.5.tar.gz", hash = "sha256:69ecedd1d1bbe71bf6313d88d1e6c4d2957b7f1d4f71312c211257f7dae64372"},
 ]
 pudb = [
     {file = "pudb-2019.2.tar.gz", hash = "sha256:e8f0ea01b134d802872184b05bffc82af29a1eb2f9374a277434b932d68f58dc"},

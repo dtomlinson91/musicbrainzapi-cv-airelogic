@@ -2,23 +2,22 @@ from __future__ import annotations
 from abc import ABC, abstractmethod, abstractstaticmethod
 from dataclasses import dataclass
 from pprint import pprint
-from typing import Union
+from typing import Union, List
 import contextlib
+import itertools
+from progress.spinner import PieSpinner
 
 # from pprint import pprint
 
 import musicbrainzngs
 import click
+import addict
 
 from musicbrainzapi.api import authenticate
 
 
 class LyricsConcreteBuilder(ABC):
     """docstring for Lyrics"""
-
-    @abstractstaticmethod
-    def set_useragent():
-        authenticate.set_useragent()
 
     @property
     @abstractmethod
@@ -55,6 +54,22 @@ class LyricsConcreteBuilder(ABC):
     def artist_id(self, artist_id: str) -> None:
         pass
 
+    @abstractstaticmethod
+    def set_useragent():
+        authenticate.set_useragent()
+
+    @abstractstaticmethod
+    def browse_releases(self) -> dict:
+        pass
+
+    @abstractstaticmethod
+    def get_album_info_list(self) -> list:
+        pass
+
+    @abstractstaticmethod
+    def paginate_results(self) -> list:
+        pass
+
     @abstractmethod
     def __init__(self) -> None:
         pass
@@ -79,13 +94,13 @@ class LyricsConcreteBuilder(ABC):
     def get_top_five_results(self) -> None:
         pass
 
+    @abstractmethod
+    def do_search_albums(self) -> None:
+        pass
+
 
 class LyricsBuilder(LyricsConcreteBuilder):
     """docstring for LyricsBuilder"""
-
-    @staticmethod
-    def set_useragent() -> None:
-        authenticate.set_useragent()
 
     @property
     def product(self) -> Lyrics:
@@ -118,6 +133,76 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def artist_id(self, artist_id: str) -> None:
         self._artist_id = artist_id
         self._product.artist_id = artist_id
+
+    @property
+    def all_tracks(self) -> set:
+        return self._all_tracks
+
+    @all_tracks.setter
+    def all_tracks(self, all_tracks: set) -> None:
+        self._all_tracks = all_tracks
+        self._product.all_tracks = all_tracks
+
+    @property
+    def all_albums_with_tracks(self) -> list:
+        return self._all_albums_with_tracks
+
+    @all_albums_with_tracks.setter
+    def all_albums_with_tracks(self, all_albums_with_tracks: list) -> None:
+        self._all_albums_with_tracks = all_albums_with_tracks
+        self._product.all_albums_with_tracks = all_albums_with_tracks
+
+    @staticmethod
+    def set_useragent() -> None:
+        authenticate.set_useragent()
+
+    @staticmethod
+    def browse_releases(
+        artist_id: str,
+        limit: int,
+        release_type: list,
+        offset: Union[int, None] = None,
+        includes: Union[List[str, None]] = list(),
+    ) -> dict:
+        releases = musicbrainzngs.browse_releases(
+            artist=artist_id,
+            limit=limit,
+            release_type=release_type,
+            offset=offset,
+            includes=includes,
+        )
+        return releases
+
+    @staticmethod
+    def get_album_info_list(
+        album_info_list: list, album_tracker: set, releases: addict.Dict
+    ) -> list:
+        for i in releases['release-list']:
+            _throwaway_dict = addict.Dict()
+            _throwaway_dict.album = i.title
+            _throwaway_dict.year = i.date.split('-')[0]
+            _throwaway_dict.tracks = [
+                j.recording.title for j in i['medium-list'][0]['track-list']
+            ]
+            if i.title not in album_tracker:
+                album_tracker.add(i.title)
+                album_info_list.append(_throwaway_dict)
+            else:
+                pass
+        return album_info_list, album_tracker
+
+    @staticmethod
+    def paginate_results(
+        releases: addict.Dict, duplicated_tracks: list
+    ) -> List:
+        tracks = [
+            j.recording.title
+            for i in releases['release-list']
+            for j in i['medium-list'][0]['track-list']
+        ]
+        for i in itertools.chain(tracks):
+            duplicated_tracks.append(i)
+        return duplicated_tracks
 
     def __init__(self) -> None:
         self.reset()
@@ -159,95 +244,78 @@ class LyricsBuilder(LyricsConcreteBuilder):
         )
         return self
 
-    @staticmethod
-    def browse_releases(
-        artist_id: str,
-        limit: int,
-        release_type: list,
-        offset: Union[int, None] = None,
-    ) -> dict:
-        releases = musicbrainzngs.browse_releases(
-            artist=artist_id,
+    def do_search_albums(self) -> None:
+        album_info_list = list()
+        album_tracker = set()
+        duplicated_tracks = list()
+        limit, offset, page = (100, 0, 1)
+
+        raw_releases = self.browse_releases(
+            artist_id=self.artist_id,
             limit=limit,
-            release_type=release_type,
+            release_type=['album'],
             offset=offset,
             includes=['recordings'],
         )
-        return releases
 
-    @staticmethod
-    def browse_recordings(
-        release: str, limit: int, offset: Union[int, None]
-    ) -> dict:
-        recordings = musicbrainzngs.browse_recordings(
-            release=release, limit=limit, offset=offset
+        releases = addict.Dict(raw_releases)
+
+        duplicated_tracks = self.paginate_results(releases, duplicated_tracks)
+
+        # Get album info list
+        album_info_list, album_tracker = self.get_album_info_list(
+            album_info_list, album_tracker, releases
         )
-        return recordings
 
-    def do_search_albumns(self) -> None:
-        limit = 100
-        offset = 0
-        page = 1
-        self.releases_list = list()
-        releases = self.browse_releases(self.artist_id, limit, ['album'])
-        total_releases_count = releases['release-count']
-        page_releases_list = releases['release-list']
-        self.releases_list += page_releases_list
-        with click.progressbar(
-            length=total_releases_count - limit,
-            label='Finding all albumns from Musicbrainz',
+        bar_count = len(releases['release-list'])
+        previous_bar_count = 0
+
+        with PieSpinner(
+            f'Finding all tracks in all albums for {self.artist}'
+            'from Musicbrainz '
         ) as bar:
-            while len(self.releases_list) < total_releases_count:
+            while bar_count != previous_bar_count:
                 offset += limit
                 page += 1
-                page_releases = self.browse_releases(
-                    self.artist_id, limit, ['album'], offset
+                # Get next page
+                raw_page_releases = self.browse_releases(
+                    artist_id=self.artist_id,
+                    limit=limit,
+                    release_type=['album'],
+                    offset=offset,
+                    includes=['recordings'],
                 )
-                page_releases_list = page_releases['release-list']
-                self.releases_list += page_releases_list
-                bar.update(limit)
-        click.echo(f'Found {total_releases_count} albums for {self.artist}')
-        return self
+                page_releases = addict.Dict(raw_page_releases)
 
-    def do_filter_albums_official(self) -> None:
-        # Get official albums only
-        _official_albums_list = list()
-        for i in self.releases_list:
-            with contextlib.suppress(KeyError):
-                if i['status'] == 'Official':
-                    _official_albums_list.append(i)
-        self.official_albums = dict(
-            (i['id'], i['title']) for i in _official_albums_list
-        )
-        # pprint(self.official_albums)
-        return self
+                # Update list
+                duplicated_tracks = self.paginate_results(
+                    page_releases, duplicated_tracks
+                )
 
-    def do_search_album_tracks(self) -> None:
-        # No album is over 100 tracks so we don't need to iterate
-        limit = 100
-        offset = 0
-        recordings_list = list()
-        self.recordings = dict()
-        with click.progressbar(
-            length=len(self.official_albums),
-            label='Finding all tracks in albums from Musicbrainz',
-        ) as bar:
-            for i in self.official_albums:
-                _recordings_result = self.browse_recordings(
-                    i, limit=limit, offset=offset
+                # Update album info list
+                (
+                    album_info_list,
+                    album_tracker,
+                ) = self.get_album_info_list(
+                    album_info_list, album_tracker, releases
                 )
-                album_recordings_list = _recordings_result['recording-list']
-                recordings_list.append(
-                    dict((i['id'], i['title']) for i in album_recordings_list)
-                )
-                bar.update(1)
-        for i in recordings_list:
-            self.recordings = {**self.recordings, **i}
-        # pprint(self.recordings)
+
+                previous_bar_count = bar_count
+                bar_count += len(page_releases['release-list'])
+                bar.next()
+            total_releases_count = bar_count
+
+        tracks = set(duplicated_tracks)
+
         click.echo(
-            f'Found {len(self.recordings)} tracks from '
-            f'{len(self.official_albums)} albums for {self.artist}'
+            f'Musicbrainz found {len(tracks)} unique tracks in '
+            f'{total_releases_count} releases for {self.artist}'
         )
+
+        # Set properties
+        self.all_tracks = tracks
+        self.all_albums_with_tracks = album_info_list
+
         return self
 
 
@@ -282,8 +350,8 @@ class LyricsClickDirector:
         if artist_meta == 'Multiple':
             _position = []
             click.echo(
-                f'Musicbrainz found several results for {self.builder.artist[0]}'
-                '. Which artist/group do you want?',
+                f'Musicbrainz found several results for '
+                f'{self.builder.artist[0]}. Which artist/group do you want?',
             )
             for i, j in zip(self.builder._top_five_results, range(1, 6)):
                 click.echo(
@@ -313,29 +381,29 @@ class LyricsClickDirector:
             )
             raise SystemExit()
 
+    def _search_for_all_tracks(self) -> None:
+        self.builder.do_search_albums()
+        pprint(self.builder._product.all_tracks)
+        # pprint(self.builder._product.all_albums_with_tracks)
+
     def _set_artist_id_on_product(self) -> None:
         self.builder.artist_id = self._artist_id
         self.builder.artist = self._artist
-        # print(self.builder._product.artist_id)
-        # print(self.builder._product.artist)
-        # print(self.builder._product.__slots__)
 
 
 @dataclass
 class Lyrics:
     """docstring for Lyrics"""
 
-    __slots__ = ['artist_id', 'artist']
+    __slots__ = [
+        'artist_id',
+        'artist',
+        'country',
+        'all_tracks',
+        'all_albums_with_tracks',
+    ]
     artist_id: str
     artist: str
-
-
-if __name__ == '__main__':
-    # director = LyricsClickDirector()
-    # builder = LyricsBuilder()
-    # director.builder = builder
-    # director._get_initial_artists('One Direction')
-    # director._confirm_final_artist()
-    # director._set_artist_id_on_product()
-    # director.builder._product
-    print(type(Lyrics))
+    country: Union[str, None]
+    all_tracks: set
+    all_albums_with_tracks: list
