@@ -1,4 +1,5 @@
 from pprint import pprint
+from typing import Union
 
 import click
 import musicbrainzngs
@@ -11,13 +12,16 @@ from musicbrainzapi.api.command_builders import lyrics
 class LyricsInfo:
     """docstring for LyricsInfo"""
 
-    def __init__(self, artist: str) -> None:
+    def __init__(self, artist: str, country: str = None) -> None:
         authenticate.set_useragent()
         self.artist = artist
+        self.country = country
         super().__init__()
 
     def _search_artist(self) -> None:
-        self.artists = musicbrainzngs.search_artists(artist=self.artist)
+        self.artists = musicbrainzngs.search_artists(
+            artist=self.artist, country=self.country
+        )
         # pprint(self.artists['artist-list'])
 
         if self.artists.get('artist-count') == 0:
@@ -72,16 +76,40 @@ class CommandUtility:
 
 # @click.argument('path', required=False, type=click.Path(resolve_path=True))
 # @click.command(short_help='a test command')
-@click.option('--artist', '-a', required=True, multiple=True, type=str)
+@click.option(
+    '--country',
+    '-c',
+    default=None,
+    required=False,
+    multiple=False,
+    type=str,
+    help='ISO A-2 Country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha'
+    '-2) Example: GB',
+)
+@click.option(
+    '--artist',
+    '-a',
+    required=True,
+    multiple=True,
+    type=str,
+    help='Artist/Group to search lyrics for.',
+)
 @click.command()
 @pass_environment
-def cli(ctx, artist) -> None:
+def cli(ctx, artist: str, country: Union[str, None]) -> None:
+    """
+    Search for lyrics of an Artist/Group.
+    """
+    print(artist)
     director = lyrics.LyricsClickDirector()
     builder = lyrics.LyricsBuilder()
     director.builder = builder
-    director._get_initial_artists(artist)
+    director._get_initial_artists(artist, country)
     director._confirm_final_artist()
     director._set_artist_id_on_product()
+    builder.do_search_albumns()
+    builder.do_filter_albums_official()
+    builder.do_search_album_tracks()
 
 
 if __name__ == '__main__':
