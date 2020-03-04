@@ -19,6 +19,7 @@ cmd_folder = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'commands')
 )
 
+
 class ComplexCLI(click.MultiCommand):
     def list_commands(self, ctx):
         rv = []
@@ -55,6 +56,7 @@ def cli(ctx, verbose, home):
     ctx.verbose = verbose
     if home is not None:
         ctx.home = home
+
 
 if __name__ == '__main__':
     cli()
