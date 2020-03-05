@@ -160,14 +160,17 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def browse_releases(
         artist_id: str,
         limit: int,
-        release_type: list,
+        release_type: list = list(),
         offset: Union[int, None] = None,
         includes: Union[List[str, None]] = list(),
     ) -> dict:
-        releases = musicbrainzngs.browse_releases(
+        # releases = musicbrainzngs.browse_releases(
+        releases = musicbrainzngs.browse_release_groups(
             artist=artist_id,
+            # track_artist=artist_id,
             limit=limit,
             release_type=release_type,
+            release_status='official',
             offset=offset,
             includes=includes,
         )
@@ -260,6 +263,13 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
         releases = addict.Dict(raw_releases)
 
+        # import json
+        # import os
+        # with open(f'{os.getcwd()}/output.json', 'w+') as file:
+        #     json.dump(releases, file, indent=4, sort_keys=True)
+
+        # raise SystemExit
+
         duplicated_tracks = self.paginate_results(releases, duplicated_tracks)
 
         # Get album info list
@@ -315,6 +325,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         # Set properties
         self.all_tracks = tracks
         self.all_albums_with_tracks = album_info_list
+        pprint(self.all_albums_with_tracks)
 
         return self
 
