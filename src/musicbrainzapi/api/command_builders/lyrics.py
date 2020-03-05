@@ -164,37 +164,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
         )
         return releases
 
-    # @staticmethod
-    # def get_album_info_list(
-    #     album_info_list: list, album_tracker: set, releases: addict.Dict
-    # ) -> list:
-    #     for i in releases['release-list']:
-    #         _throwaway_dict = addict.Dict()
-    #         _throwaway_dict.album = i.title
-    #         _throwaway_dict.year = i.date.split('-')[0]
-    #         _throwaway_dict.tracks = [
-    #             j.recording.title for j in i['medium-list'][0]['track-list']
-    #         ]
-    #         if i.title not in album_tracker:
-    #             album_tracker.add(i.title)
-    #             album_info_list.append(_throwaway_dict)
-    #         else:
-    #             pass
-    #     return album_info_list, album_tracker
-
-    # @staticmethod
-    # def paginate_results(
-    #     releases: addict.Dict, duplicated_tracks: list
-    # ) -> List:
-    #     tracks = [
-    #         j.recording.title
-    #         for i in releases['release-list']
-    #         for j in i['medium-list'][0]['track-list']
-    #     ]
-    #     for i in itertools.chain(tracks):
-    #         duplicated_tracks.append(i)
-    #     return duplicated_tracks
-
     def __init__(self) -> None:
         self.reset()
 
@@ -301,7 +270,8 @@ class LyricsBuilder(LyricsConcreteBuilder):
             length=total_albums,
             label=(
                 'Searching Musicbrainz for all songs in all albums for '
-                f'{self.artist}'),
+                f'{self.artist}'
+            ),
         ) as bar:
             for id, alb in self.release_group_ids.items():
                 resp_0 = addict.Dict(
@@ -322,9 +292,15 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
                 album_tracks = resp_0['release-list'][max_track_pos]
 
-                album_year = resp_0['release-list'][max_track_pos].date.split(
-                    '-'
-                )[0]
+                # click.echo()
+                # click.echo(resp_0['release-list'][max_track_pos].date)
+
+                try:
+                    album_year = resp_0['release-list'][max_track_pos].date.split(
+                        '-'
+                    )[0]
+                except TypeError:
+                    album_year = 'Missing'
 
                 album_tracks = addict.Dict(
                     (
@@ -338,9 +314,11 @@ class LyricsBuilder(LyricsConcreteBuilder):
                     )
                 )
 
+                self.all_albums.append(album_tracks)
+
                 bar.update(1)
 
-            self.all_albums.append(album_tracks)
+        pprint(self.all_albums)
 
         return self
 
