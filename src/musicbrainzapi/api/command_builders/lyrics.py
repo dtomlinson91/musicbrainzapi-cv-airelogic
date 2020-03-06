@@ -2,16 +2,15 @@ from __future__ import annotations
 from abc import ABC, abstractmethod, abstractstaticmethod
 from dataclasses import dataclass
 from pprint import pprint
-from typing import Union, List
-import contextlib
-import itertools
-from progress.spinner import PieSpinner
-
-# from pprint import pprint
+from typing import Union, List, Dict
+import html
+import json
+import os
 
 import musicbrainzngs
 import click
 import addict
+import requests
 
 from musicbrainzapi.api import authenticate
 
@@ -58,9 +57,9 @@ class LyricsConcreteBuilder(ABC):
     def set_useragent():
         authenticate.set_useragent()
 
-    @abstractstaticmethod
-    def browse_releases(self) -> dict:
-        pass
+    # @abstractstaticmethod
+    # def browse_releases(self) -> dict:
+    #     pass
 
     @abstractmethod
     def __init__(self) -> None:
@@ -71,11 +70,11 @@ class LyricsConcreteBuilder(ABC):
         pass
 
     @abstractmethod
-    def do_search_artists(self) -> None:
+    def find_artists(self) -> None:
         pass
 
     @abstractmethod
-    def do_sort_names(self) -> None:
+    def sort_artists(self) -> None:
         pass
 
     @abstractmethod
@@ -84,6 +83,14 @@ class LyricsConcreteBuilder(ABC):
 
     @abstractmethod
     def get_top_five_results(self) -> None:
+        pass
+
+    @abstractmethod
+    def find_all_albums(self) -> None:
+        pass
+
+    @abstractmethod
+    def find_all_tracks(self) -> None:
         pass
 
 
@@ -123,15 +130,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
         self._product.artist_id = artist_id
 
     @property
-    def all_tracks(self) -> set:
-        return self._all_tracks
-
-    @all_tracks.setter
-    def all_tracks(self, all_tracks: set) -> None:
-        self._all_tracks = all_tracks
-        self._product.all_tracks = all_tracks
-
-    @property
     def all_albums_with_tracks(self) -> list:
         return self._all_albums_with_tracks
 
@@ -144,40 +142,20 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def set_useragent() -> None:
         authenticate.set_useragent()
 
-    @staticmethod
-    def browse_releases(
-        artist_id: str,
-        limit: int,
-        release_type: list = list(),
-        offset: Union[int, None] = None,
-        includes: Union[List[str, None]] = list(),
-    ) -> dict:
-        # releases = musicbrainzngs.browse_releases(
-        releases = musicbrainzngs.browse_release_groups(
-            artist=artist_id,
-            # track_artist=artist_id,
-            limit=limit,
-            release_type=release_type,
-            release_status='official',
-            offset=offset,
-            includes=includes,
-        )
-        return releases
-
     def __init__(self) -> None:
         self.reset()
 
     def reset(self) -> None:
         self._product = Lyrics
 
-    def do_search_artists(self) -> None:
+    def find_artists(self) -> None:
         self.musicbrainz_artists = musicbrainzngs.search_artists(
             artist=self.artist, country=self.country
         )
         # pprint(self.musicbrainz_artists['artist-list'])
         return self
 
-    def do_sort_names(self) -> None:
+    def sort_artists(self) -> None:
         self._sort_names = dict(
             (i.get('id'), f'{i.get("sort-name")} | {i.get("disambiguation")}')
             if i.get('disambiguation') is not None
@@ -215,8 +193,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
         total_releases = resp_0['release-group-count']
         response_releases = len(resp_0['release-group-list'])
-        # print(total_releases)
-        # print(response_releases)
 
         with click.progressbar(
             length=total_releases,
@@ -265,6 +241,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def find_all_tracks(self) -> None:
         self.all_albums = list()
         total_albums = len(self.release_group_ids)
+        self.total_track_count = 0
 
         with click.progressbar(
             length=total_albums,
@@ -288,17 +265,16 @@ class LyricsBuilder(LyricsConcreteBuilder):
                     for i in resp_0['release-list']
                 ]
 
+                self.total_track_count += max(album_track_count)
+
                 max_track_pos = album_track_count.index(max(album_track_count))
 
                 album_tracks = resp_0['release-list'][max_track_pos]
 
-                # click.echo()
-                # click.echo(resp_0['release-list'][max_track_pos].date)
-
                 try:
-                    album_year = resp_0['release-list'][max_track_pos].date.split(
-                        '-'
-                    )[0]
+                    album_year = resp_0['release-list'][
+                        max_track_pos
+                    ].date.split('-')[0]
                 except TypeError:
                     album_year = 'Missing'
 
@@ -318,9 +294,67 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
                 bar.update(1)
 
-        pprint(self.all_albums)
-
+        # pprint(self.all_albums)
+        click.echo(
+            f'Found {self.total_track_count} songs in total across'
+            f' {len(self.release_group_ids)} albums for {self.artist}'
+        )
+        del resp_0
         return self
+
+    def find_lyrics_urls(self) -> None:
+        self.all_albums_lyrics_url = list()
+        for x in self.all_albums:
+            for alb, songs in x.items():
+                lyrics = addict.Dict(
+                    (
+                        alb,
+                        [
+                            self.construct_lyrics_url(self.artist, i)
+                            for i in songs
+                        ],
+                    )
+                )
+                self.all_albums_lyrics_url.append(lyrics)
+
+        # pprint(self.all_albums_lyrics_url)
+        return self
+
+    def find_all_lyrics(self) -> None:
+        self.all_albums_lyrics = list()
+
+        with click.progressbar(
+            length=self.total_track_count,
+            label=f'Finding lyrics for {self.total_track_count}'
+            f' tracks for {self.artist}. This may take some time! ☕️',
+        ) as bar:
+
+            for x in self.all_albums_lyrics_url:
+                for alb, urls in x.items():
+                    for i in urls:
+                        lyrics = addict.Dict(
+                            (alb, [self.request_lyrics_from_url(i)])
+                        )
+                        self.all_albums_lyrics.append(lyrics)
+                        bar.update(1)
+        return self
+
+    @staticmethod
+    def construct_lyrics_url(artist: str, song: str) -> str:
+        lyrics_api_base = 'https://api.lyrics.ovh/v1'
+        lyrics_api_url = html.escape(f'{lyrics_api_base}/{artist}/{song}')
+        return lyrics_api_url
+
+    @staticmethod
+    def request_lyrics_from_url(url: str) -> str:
+        resp = requests.get(url)
+
+        # No lyrics for a song will return a key of 'error', we pass on this.
+        try:
+            lyrics = resp.json()['lyrics']
+            return lyrics
+        except KeyError:
+            return
 
 
 class LyricsClickDirector:
@@ -341,10 +375,11 @@ class LyricsClickDirector:
         self.builder.artist = artist
         self.builder.country = country
         self.builder.set_useragent()
-        self.builder.do_search_artists()
-        self.builder.do_sort_names()
+        self.builder.find_artists()
+        self.builder.sort_artists()
         self.builder.get_accuracy_scores()
         self.builder.get_top_five_results()
+        return self
 
     def _confirm_final_artist(self) -> None:
         artist_meta = None
@@ -388,6 +423,25 @@ class LyricsClickDirector:
                 'alternative names that the artist/group may go by.'
             )
             raise SystemExit()
+        return self
+
+    def _query_for_data(self) -> None:
+        self.builder.find_all_albums()
+        self.builder.find_all_tracks()
+        self.builder._product.all_albums_with_tracks = self.builder.all_albums
+        return self
+
+    def _get_lyrics(self) -> None:
+        self.builder.find_lyrics_urls()
+        self.builder.find_all_lyrics()
+        self.builder._product.all_albums_with_lyrics = (
+            self.builder.all_albums_lyrics
+        )
+
+        with open(f'{os.getcwd()}/lyrics.json', 'w+') as file:
+            json.dump(
+                self.builder.all_albums_lyrics, file, indent=4, sort_keys=True
+            )
 
 
 @dataclass
@@ -398,11 +452,11 @@ class Lyrics:
         'artist_id',
         'artist',
         'country',
-        'all_tracks',
         'all_albums_with_tracks',
+        'all_albums_with_lyrics',
     ]
     artist_id: str
     artist: str
     country: Union[str, None]
-    all_tracks: set
-    all_albums_with_tracks: list
+    all_albums_with_tracks: List[Dict[str, List[str]]]
+    all_albums_with_lyrics: List[Dict[str, List[str]]]

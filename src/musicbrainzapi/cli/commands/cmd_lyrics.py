@@ -40,5 +40,6 @@ def cli(ctx, artist: str, country: Union[str, None]) -> None:
     director.builder = builder
     director._get_initial_artists(artist, country)
     director._confirm_final_artist()
-    director.builder.find_all_albums()
-    director.builder.find_all_tracks()
+    director._query_for_data()
+    director._get_lyrics()
+
