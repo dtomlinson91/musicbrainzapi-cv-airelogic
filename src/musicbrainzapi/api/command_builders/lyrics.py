@@ -251,7 +251,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         with click.progressbar(
             length=total_albums,
             label=(
-                'Searching Musicbrainz for all songs in all albums for '
+                'Searching Musicbrainz for all tracks in all albums for '
                 f'{self.artist}'
             ),
         ) as bar:
@@ -301,7 +301,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
         # pprint(self.all_albums)
         click.echo(
-            f'Found {self.total_track_count} songs in total across'
+            f'Found {self.total_track_count} tracks across'
             f' {len(self.release_group_ids)} albums for {self.artist}'
         )
         del resp_0
@@ -310,13 +310,13 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def find_lyrics_urls(self) -> None:
         self.all_albums_lyrics_url = list()
         for x in self.all_albums:
-            for alb, songs in x.items():
+            for alb, tracks in x.items():
                 lyrics = addict.Dict(
                     (
                         alb,
                         [
                             self.construct_lyrics_url(self.artist, i)
-                            for i in songs
+                            for i in tracks
                         ],
                     )
                 )
@@ -325,6 +325,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         # pprint(self.all_albums_lyrics_url)
         return self
 
+# change this for progressbar for i loop
     def find_all_lyrics(self) -> None:
         self.all_albums_lyrics = list()
 
@@ -408,9 +409,10 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def calculate_final_average_by_album(self) -> None:
         self.album_statistics = addict.Dict()
-        # album_lyrics = self.all_albums_lyrics_sum
-        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
-            album_lyrics = json.load(f)
+        album_lyrics = self.all_albums_lyrics_sum
+        # with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
+        #     album_lyrics = json.load(f)
+
         for i in album_lyrics:
             for album, count in i.items():
                 # We filter twice, once to remove strings, then to filter
@@ -427,9 +429,11 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def calculate_final_average_by_year(self) -> None:
         group_by_years = addict.Dict()
         self.year_statistics = addict.Dict()
-        # album_lyrics = self.all_albums_lyrics_sum
-        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
-            album_lyrics = json.load(f)
+        album_lyrics = self.all_albums_lyrics_sum
+        # with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
+        #     album_lyrics = json.load(f)
+
+        # Merge years together
         for i in album_lyrics:
             for album, count in i.items():
                 year = album.split('[')[-1].strip(']')
@@ -443,25 +447,14 @@ class LyricsBuilder(LyricsConcreteBuilder):
                 # Multiple years raise a TypeError - we append
                 except TypeError:
                     group_by_years.get(year).extend(count)
+
         for year, y_count in group_by_years.items():
-            # year_total, year_running = (0, 0)
-            # for y in y_count:
-                # if isinstance(y, int):
-                #     year_running += y
-                #     year_total += 1
-                # else:
-                #     pass
             _y_count = [d for d in y_count if isinstance(d, int)]
             _y_count = [d for d in _y_count if d > 1]
             _d = self.get_descriptive_statistics(_y_count)
             self.year_statistics = addict.Dict(
                 **self.year_statistics, **addict.Dict((year, _d))
             )
-            # avg = math.ceil(year_running / year_total)
-            # print(year, avg)
-            # self.year_statistics = addict.Dict(
-            #     **self.year_statistics, **addict.Dict((year, avg))
-            # )
         pprint(self.year_statistics)
 
     @staticmethod
