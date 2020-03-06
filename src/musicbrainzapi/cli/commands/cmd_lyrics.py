@@ -1,11 +1,8 @@
-# from pprint import pprint
 from typing import Union
 
 import click
-# import musicbrainzngs
 
 from musicbrainzapi.cli.cli import pass_environment
-# from musicbrainzapi.api import authenticate
 from musicbrainzapi.api.command_builders import lyrics
 
 
@@ -29,12 +26,16 @@ from musicbrainzapi.api.command_builders import lyrics
     type=str,
     help='Artist/Group to search lyrics for.',
 )
+@click.option(
+    '--save-lyrics', required=False, is_flag=True, help='Save the lyrics '
+)
 @click.command()
 @pass_environment
-def cli(ctx, artist: str, country: Union[str, None]) -> None:
+def cli(ctx, artist: str, country: Union[str, None], save_lyrics) -> None:
     """
     Search for lyrics of an Artist/Group.
     """
+    print(f'save_lyrics={save_lyrics}')
     director = lyrics.LyricsClickDirector()
     builder = lyrics.LyricsBuilder()
     director.builder = builder
@@ -42,4 +43,3 @@ def cli(ctx, artist: str, country: Union[str, None]) -> None:
     director._confirm_final_artist()
     director._query_for_data()
     director._get_lyrics()
-

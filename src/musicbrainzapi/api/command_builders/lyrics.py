@@ -6,6 +6,7 @@ from typing import Union, List, Dict
 import html
 import json
 import os
+from collections import Counter
 
 import musicbrainzngs
 import click
@@ -331,12 +332,38 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
             for x in self.all_albums_lyrics_url:
                 for alb, urls in x.items():
-                    for i in urls:
-                        lyrics = addict.Dict(
-                            (alb, [self.request_lyrics_from_url(i)])
+                    bar.update(1)
+                    update = len(urls)
+                    lyrics = addict.Dict(
+                        (alb, [self.request_lyrics_from_url(i) for i in urls])
+                    )
+                    self.all_albums_lyrics.append(lyrics)
+                    bar.update(update - 1)
+        return self
+
+    def count_words_in_lyrics(self) -> None:
+        # remove punctuation, fix click bar
+        self.all_albums_lyrics_count = list()
+        with click.progressbar(
+            length=self.total_track_count, label=f'Processing lyrics',
+        ) as bar:
+            for x in self.all_albums_lyrics:
+                for alb, lyrics in x.items():
+                    update = len(lyrics)
+                    bar.update(1)
+                    lyrics = addict.Dict(
+                        (
+                            alb,
+                            [
+                                Counter(i.split()).most_common()
+                                if i is not None
+                                else 'No Lyrics'
+                                for i in lyrics
+                            ],
                         )
-                        self.all_albums_lyrics.append(lyrics)
-                        bar.update(1)
+                    )
+                    self.all_albums_lyrics_count.append(lyrics)
+                    bar.update(update - 1)
         return self
 
     @staticmethod
@@ -389,8 +416,12 @@ class LyricsClickDirector:
         if artist_meta == 'Multiple':
             _position = []
             click.echo(
-                f'Musicbrainz found several results for '
-                f'{self.builder.artist[0]}. Which artist/group do you want?'
+                click.style(
+                    f'Musicbrainz found several results for '
+                    f'{self.builder.artist[0]}. Which artist/group do you want'
+                    '?',
+                    fg='green',
+                )
             )
             for i, j in zip(self.builder._top_five_results, range(1, 6)):
                 click.echo(
@@ -400,7 +431,7 @@ class LyricsClickDirector:
                 _position.append(i)
             chosen = int(
                 click.prompt(
-                    f'Enter choice, default is',
+                    click.style(f'Enter choice, default is', blink=True),
                     default=1,
                     type=click.IntRange(
                         1, len(self.builder._top_five_results)
@@ -437,11 +468,15 @@ class LyricsClickDirector:
         self.builder._product.all_albums_with_lyrics = (
             self.builder.all_albums_lyrics
         )
-
-        with open(f'{os.getcwd()}/lyrics.json', 'w+') as file:
+        self.builder.count_words_in_lyrics()
+        with open(f'{os.getcwd()}/lyrics_count.json', 'w+') as file:
             json.dump(
-                self.builder.all_albums_lyrics, file, indent=4, sort_keys=True
+                self.builder.all_albums_lyrics_count,
+                file,
+                indent=4,
+                sort_keys=True,
             )
+        return self
 
 
 @dataclass
