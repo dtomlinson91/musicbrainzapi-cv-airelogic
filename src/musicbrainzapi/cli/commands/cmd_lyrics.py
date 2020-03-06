@@ -29,9 +29,12 @@ from musicbrainzapi.api.command_builders import lyrics
 @click.option(
     '--save-lyrics', required=False, is_flag=True, help='Save the lyrics '
 )
+@click.option('--dev', is_flag=True)
 @click.command()
 @pass_environment
-def cli(ctx, artist: str, country: Union[str, None], save_lyrics) -> None:
+def cli(
+    ctx, artist: str, country: Union[str, None], save_lyrics, dev: bool
+) -> None:
     """
     Search for lyrics of an Artist/Group.
     """
@@ -39,7 +42,14 @@ def cli(ctx, artist: str, country: Union[str, None], save_lyrics) -> None:
     director = lyrics.LyricsClickDirector()
     builder = lyrics.LyricsBuilder()
     director.builder = builder
+    if dev:
+        director._dev()
+        raise(SystemExit)
     director._get_initial_artists(artist, country)
     director._confirm_final_artist()
     director._query_for_data()
     director._get_lyrics()
+    director._calculate_average()
+
+def dev():
+    pass

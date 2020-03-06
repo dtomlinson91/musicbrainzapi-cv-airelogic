@@ -7,6 +7,8 @@ import html
 import json
 import os
 from collections import Counter
+import string
+import math
 
 import musicbrainzngs
 import click
@@ -344,8 +346,9 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def count_words_in_lyrics(self) -> None:
         # remove punctuation, fix click bar
         self.all_albums_lyrics_count = list()
+        print(self.total_track_count)
         with click.progressbar(
-            length=self.total_track_count, label=f'Processing lyrics',
+            length=self.total_track_count, label=f'Processing lyrics'
         ) as bar:
             for x in self.all_albums_lyrics:
                 for alb, lyrics in x.items():
@@ -364,7 +367,93 @@ class LyricsBuilder(LyricsConcreteBuilder):
                     )
                     self.all_albums_lyrics_count.append(lyrics)
                     bar.update(update - 1)
+        click.echo(f'Processed lyrics for {self.total_track_count} tracks.')
         return self
+
+    def calculate_average_all_albums(self) -> None:
+        self.all_albums_lyrics_sum = list()
+        # with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
+        #     album_lyrics = json.load(f)
+        album_lyrics = self.all_albums_lyrics_count
+        count = 0
+        for i in album_lyrics:
+            count += len(i)
+            for album, lyrics_list in i.items():
+                album_avg = list()
+                d = addict.Dict()
+                print(album)
+                for j in lyrics_list:
+                    if j != 'No Lyrics':
+                        song_total = 0
+                        for k in j:
+                            song_total += k[1]
+                    else:
+                        song_total = "No Lyrics"
+                    album_avg.append(song_total)
+                # We want to avoid a ValueError when we loop through
+                # the first time
+                try:
+                    d = addict.Dict(**d, **addict.Dict(album, album_avg))
+                except ValueError:
+                    d = addict.Dict((album, album_avg))
+                print(d)
+                self.all_albums_lyrics_sum.append(d)
+        print(count)
+        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'w+') as f:
+            json.dump(self.all_albums_lyrics_sum, f)
+        return self
+
+    def calculate_final_average_by_album(self) -> None:
+        self.album_averages = addict.Dict()
+        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
+            album_lyrics = json.load(f)
+            for i in album_lyrics:
+                for album, count in i.items():
+                    album_total, album_running = (0, 0)
+                    for c in count:
+                        if isinstance(c, int):
+                            album_running += c
+                            album_total += 1
+                        else:
+                            pass
+                    avg = math.ceil(album_running / album_total)
+                    self.album_averages = addict.Dict(
+                        **self.album_averages, **addict.Dict((album, avg))
+                    )
+        print(self.album_averages)
+
+    def calculate_final_average_by_year(self) -> None:
+        group_by_years = addict.Dict()
+        self.year_averages = addict.Dict()
+        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
+            album_lyrics = json.load(f)
+            for i in album_lyrics:
+                for album, count in i.items():
+                    year = album.split('[')[-1].strip(']')
+                    try:
+                        group_by_years = addict.Dict(
+                            **group_by_years, **addict.Dict((year, count))
+                        )
+                    # First loop returns value error for empty dict
+                    except ValueError:
+                        group_by_years = addict.Dict((year, count))
+                    # Multiple years raise a TypeError - we append
+                    except TypeError:
+                        group_by_years.get(year).extend(count)
+            for year, y_count in group_by_years.items():
+                year_total, year_running = (0, 0)
+                for y in y_count:
+                    if isinstance(y, int):
+                        year_running += y
+                        year_total += 1
+                    else:
+                        pass
+                avg = math.ceil(year_running / year_total)
+                print(year, avg)
+                self.year_averages = addict.Dict(
+                    **self.year_averages, **addict.Dict((year, avg))
+                )
+        print(self.year_averages)
 
     @staticmethod
     def construct_lyrics_url(artist: str, song: str) -> str:
@@ -378,10 +467,15 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
         # No lyrics for a song will return a key of 'error', we pass on this.
         try:
-            lyrics = resp.json()['lyrics']
+            lyrics = LyricsBuilder.strip_punctuation(resp.json()['lyrics'])
             return lyrics
-        except KeyError:
+        except (KeyError, json.decoder.JSONDecodeError):
             return
+
+    @staticmethod
+    def strip_punctuation(word: str) -> str:
+        _strip = word.translate(str.maketrans('', '', string.punctuation))
+        return _strip
 
 
 class LyricsClickDirector:
@@ -476,7 +570,21 @@ class LyricsClickDirector:
                 indent=4,
                 sort_keys=True,
             )
+        self.builder._product.all_albums_lyrics_count = (
+            self.builder.all_albums_lyrics_count
+        )
         return self
+
+    def _calculate_average(self) -> None:
+        self.builder.calculate_average_all_albums()
+        self.builder._product.all_albums_lyrics_sum = (
+            self.builder.all_albums_lyrics_sum
+        )
+        pprint(self.builder._product.all_albums_lyrics_sum)
+
+    def _dev(self) -> None:
+        self.builder.calculate_final_average_by_album()
+        self.builder.calculate_final_average_by_year()
 
 
 @dataclass
@@ -489,9 +597,13 @@ class Lyrics:
         'country',
         'all_albums_with_tracks',
         'all_albums_with_lyrics',
+        'all_albums_lyrics_count',
+        'all_albums_lyrics_sum',
     ]
     artist_id: str
     artist: str
     country: Union[str, None]
     all_albums_with_tracks: List[Dict[str, List[str]]]
     all_albums_with_lyrics: List[Dict[str, List[str]]]
+    all_albums_lyrics_count: List[Dict[str, List[List[str, int]]]]
+    all_albums_lyrics_sum: List[Dict[str, List[int, str]]]
