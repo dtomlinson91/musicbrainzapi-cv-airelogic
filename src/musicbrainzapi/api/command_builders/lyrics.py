@@ -9,11 +9,13 @@ import os
 from collections import Counter
 import string
 import math
+import statistics
 
 import musicbrainzngs
 import click
 import addict
 import requests
+import numpy
 
 from musicbrainzapi.api import authenticate
 
@@ -396,63 +398,66 @@ class LyricsBuilder(LyricsConcreteBuilder):
                     d = addict.Dict(**d, **addict.Dict(album, album_avg))
                 except ValueError:
                     d = addict.Dict((album, album_avg))
-                print(d)
+                # print(d)
                 self.all_albums_lyrics_sum.append(d)
-        print(count)
+        # print(count)
         with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'w+') as f:
             json.dump(self.all_albums_lyrics_sum, f)
         return self
 
     def calculate_final_average_by_album(self) -> None:
-        self.album_averages = addict.Dict()
+        self.album_statistics = addict.Dict()
+        # album_lyrics = self.all_albums_lyrics_sum
         with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
             album_lyrics = json.load(f)
-            for i in album_lyrics:
-                for album, count in i.items():
-                    album_total, album_running = (0, 0)
-                    for c in count:
-                        if isinstance(c, int):
-                            album_running += c
-                            album_total += 1
-                        else:
-                            pass
-                    avg = math.ceil(album_running / album_total)
-                    self.album_averages = addict.Dict(
-                        **self.album_averages, **addict.Dict((album, avg))
-                    )
-        print(self.album_averages)
+        for i in album_lyrics:
+            for album, count in i.items():
+                _count = [d for d in count if isinstance(d, int)]
+                avg = math.ceil(statistics.mean(_count))
+                stdev = math.ceil(statistics.stdev(_count))
+                # self.album_statistics = addict.Dict(
+                #     **self.album_statistics, **addict.Dict((album, avg))
+                # )
+                self.album_statistics = addict.Dict(
+                    **self.album_statistics,
+                    **addict.Dict(
+                        (album, addict.Dict(('avg', avg), ('std', stdev)))
+                    ),
+                )
+        print(self.album_statistics)
 
     def calculate_final_average_by_year(self) -> None:
         group_by_years = addict.Dict()
         self.year_averages = addict.Dict()
+        # album_lyrics = self.all_albums_lyrics_sum
         with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
             album_lyrics = json.load(f)
-            for i in album_lyrics:
-                for album, count in i.items():
-                    year = album.split('[')[-1].strip(']')
-                    try:
-                        group_by_years = addict.Dict(
-                            **group_by_years, **addict.Dict((year, count))
-                        )
-                    # First loop returns value error for empty dict
-                    except ValueError:
-                        group_by_years = addict.Dict((year, count))
-                    # Multiple years raise a TypeError - we append
-                    except TypeError:
-                        group_by_years.get(year).extend(count)
-            for year, y_count in group_by_years.items():
-                year_total, year_running = (0, 0)
-                for y in y_count:
-                    if isinstance(y, int):
-                        year_running += y
-                        year_total += 1
-                    else:
-                        pass
-                avg = math.ceil(year_running / year_total)
-                print(year, avg)
-                self.year_averages = addict.Dict(
-                    **self.year_averages, **addict.Dict((year, avg))
-                )
+        for i in album_lyrics:
+            for album, count in i.items():
+                year = album.split('[')[-1].strip(']')
+                try:
+                    group_by_years = addict.Dict(
+                        **group_by_years, **addict.Dict((year, count))
+                    )
+                # First loop returns value error for empty dict
+                except ValueError:
+                    group_by_years = addict.Dict((year, count))
+                # Multiple years raise a TypeError - we append
+                except TypeError:
+                    group_by_years.get(year).extend(count)
+        for year, y_count in group_by_years.items():
+            year_total, year_running = (0, 0)
+            for y in y_count:
+                if isinstance(y, int):
+                    year_running += y
+                    year_total += 1
+                else:
+                    pass
+            avg = math.ceil(year_running / year_total)
+            # print(year, avg)
+            self.year_averages = addict.Dict(
+                **self.year_averages, **addict.Dict((year, avg))
+            )
         print(self.year_averages)
 
     @staticmethod
@@ -476,6 +481,26 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def strip_punctuation(word: str) -> str:
         _strip = word.translate(str.maketrans('', '', string.punctuation))
         return _strip
+
+    @staticmethod
+    def get_descriptive_statistics(nums: list) -> Dict[str, int]:
+        avg = math.ceil(numpy.mean(nums))
+        median = math.ceil(numpy.median(nums))
+        std = math.ceil(numpy.std(nums))
+        max = math.ceil(numpy.max(nums))
+        min = math.ceil(numpy.min(nums))
+        p_25 = math.ceil(numpy.percentile(nums, 25))
+        p_75 = math.ceil(numpy.percentile(nums, 75))
+        _d = addict.Dict(
+            ('avg', avg),
+            ('median', median),
+            ('std', std),
+            ('max', max),
+            ('min', min),
+            ('p_25', p_25),
+            ('p_75', p_75),
+        )
+        return _d
 
 
 class LyricsClickDirector:
@@ -581,6 +606,8 @@ class LyricsClickDirector:
             self.builder.all_albums_lyrics_sum
         )
         pprint(self.builder._product.all_albums_lyrics_sum)
+        self.builder.calculate_final_average_by_album()
+        self.builder.calculate_final_average_by_year()
 
     def _dev(self) -> None:
         self.builder.calculate_final_average_by_album()
