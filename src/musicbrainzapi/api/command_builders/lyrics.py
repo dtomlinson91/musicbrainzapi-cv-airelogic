@@ -372,7 +372,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         click.echo(f'Processed lyrics for {self.total_track_count} tracks.')
         return self
 
-# rename this
+    # rename this
     def calculate_average_all_albums(self) -> None:
         self.all_albums_lyrics_sum = list()
         # with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
@@ -419,17 +419,14 @@ class LyricsBuilder(LyricsConcreteBuilder):
                 _count = [d for d in _count if d > 1]
                 _d = self.get_descriptive_statistics(_count)
                 self.album_statistics = addict.Dict(
-                    **self.album_statistics,
-                    **addict.Dict(
-                        (album, _d)
-                    ),
+                    **self.album_statistics, **addict.Dict((album, _d))
                 )
         pprint(self.album_statistics)
 
-# implement above in this
+    # implement above in this
     def calculate_final_average_by_year(self) -> None:
         group_by_years = addict.Dict()
-        self.year_averages = addict.Dict()
+        self.year_statistics = addict.Dict()
         # album_lyrics = self.all_albums_lyrics_sum
         with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
             album_lyrics = json.load(f)
@@ -447,19 +444,25 @@ class LyricsBuilder(LyricsConcreteBuilder):
                 except TypeError:
                     group_by_years.get(year).extend(count)
         for year, y_count in group_by_years.items():
-            year_total, year_running = (0, 0)
-            for y in y_count:
-                if isinstance(y, int):
-                    year_running += y
-                    year_total += 1
-                else:
-                    pass
-            avg = math.ceil(year_running / year_total)
-            # print(year, avg)
-            self.year_averages = addict.Dict(
-                **self.year_averages, **addict.Dict((year, avg))
+            # year_total, year_running = (0, 0)
+            # for y in y_count:
+                # if isinstance(y, int):
+                #     year_running += y
+                #     year_total += 1
+                # else:
+                #     pass
+            _y_count = [d for d in y_count if isinstance(d, int)]
+            _y_count = [d for d in _y_count if d > 1]
+            _d = self.get_descriptive_statistics(_y_count)
+            self.year_statistics = addict.Dict(
+                **self.year_statistics, **addict.Dict((year, _d))
             )
-        print(self.year_averages)
+            # avg = math.ceil(year_running / year_total)
+            # print(year, avg)
+            # self.year_statistics = addict.Dict(
+            #     **self.year_statistics, **addict.Dict((year, avg))
+            # )
+        pprint(self.year_statistics)
 
     @staticmethod
     def construct_lyrics_url(artist: str, song: str) -> str:
@@ -494,6 +497,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         p_25 = math.ceil(numpy.percentile(nums, 25))
         p_75 = math.ceil(numpy.percentile(nums, 75))
         p_90 = math.ceil(numpy.percentile(nums, 90))
+        count = len(nums)
         _d = addict.Dict(
             ('avg', avg),
             ('median', median),
@@ -504,6 +508,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
             ('p_25', p_25),
             ('p_75', p_75),
             ('p_90', p_90),
+            ('count', count)
         )
         return _d
 
