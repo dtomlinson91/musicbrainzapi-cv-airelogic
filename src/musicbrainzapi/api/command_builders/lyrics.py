@@ -372,6 +372,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         click.echo(f'Processed lyrics for {self.total_track_count} tracks.')
         return self
 
+# rename this
     def calculate_average_all_albums(self) -> None:
         self.all_albums_lyrics_sum = list()
         # with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
@@ -412,20 +413,20 @@ class LyricsBuilder(LyricsConcreteBuilder):
             album_lyrics = json.load(f)
         for i in album_lyrics:
             for album, count in i.items():
+                # We filter twice, once to remove strings, then to filter
+                # the integers
                 _count = [d for d in count if isinstance(d, int)]
-                avg = math.ceil(statistics.mean(_count))
-                stdev = math.ceil(statistics.stdev(_count))
-                # self.album_statistics = addict.Dict(
-                #     **self.album_statistics, **addict.Dict((album, avg))
-                # )
+                _count = [d for d in _count if d > 1]
+                _d = self.get_descriptive_statistics(_count)
                 self.album_statistics = addict.Dict(
                     **self.album_statistics,
                     **addict.Dict(
-                        (album, addict.Dict(('avg', avg), ('std', stdev)))
+                        (album, _d)
                     ),
                 )
-        print(self.album_statistics)
+        pprint(self.album_statistics)
 
+# implement above in this
     def calculate_final_average_by_year(self) -> None:
         group_by_years = addict.Dict()
         self.year_averages = addict.Dict()
@@ -489,16 +490,20 @@ class LyricsBuilder(LyricsConcreteBuilder):
         std = math.ceil(numpy.std(nums))
         max = math.ceil(numpy.max(nums))
         min = math.ceil(numpy.min(nums))
+        p_10 = math.ceil(numpy.percentile(nums, 10))
         p_25 = math.ceil(numpy.percentile(nums, 25))
         p_75 = math.ceil(numpy.percentile(nums, 75))
+        p_90 = math.ceil(numpy.percentile(nums, 90))
         _d = addict.Dict(
             ('avg', avg),
             ('median', median),
             ('std', std),
             ('max', max),
             ('min', min),
+            ('p_10', p_10),
             ('p_25', p_25),
             ('p_75', p_75),
+            ('p_90', p_90),
         )
         return _d
 
