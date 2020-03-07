@@ -1,5 +1,4 @@
 import os
-import sys
 from importlib import import_module
 
 import click
@@ -31,12 +30,16 @@ class ComplexCLI(click.MultiCommand):
         rv.sort()
         return rv
 
+    # def get_command(self, ctx, name):
+    #     try:
+    #         mod = import_module(f'musicbrainzapi.cli.commands.cmd_{name}')
+    #     except ImportError as e:
+    #         print(e)
+    #         return
+    #     return mod.cli
+
     def get_command(self, ctx, name):
-        try:
-            mod = import_module(f'musicbrainzapi.cli.commands.cmd_{name}')
-        except ImportError as e:
-            print(e)
-            return
+        mod = import_module(f'musicbrainzapi.cli.commands.cmd_{name}')
         return mod.cli
 
 
@@ -61,9 +64,5 @@ def cli(ctx, path):
     """A complex command line interface."""
     # ctx.verbose = verbose
     if path is not None:
-        # click.echo(f'Path set to {os.path.expanduser(path)}')
+        click.echo(f'Path set to {os.path.expanduser(path)}')
         ctx.path = os.path.expanduser(path)
-
-
-if __name__ == '__main__':
-    cli()

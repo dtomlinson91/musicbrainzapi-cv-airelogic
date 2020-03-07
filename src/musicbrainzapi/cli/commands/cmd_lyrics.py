@@ -1,3 +1,4 @@
+import json
 from typing import Union
 
 import click
@@ -5,20 +6,18 @@ import click
 import matplotlib.pyplot as plt
 
 from musicbrainzapi.cli.cli import pass_environment
-from musicbrainzapi.api.command_builders import lyrics
+
 import musicbrainzapi.wordcloud
+from musicbrainzapi.api.lyrics.builder import LyricsBuilder
+from musicbrainzapi.api.lyrics.director import LyricsClickDirector
 
 
-# @click.argument('path', required=False, type=click.Path(resolve_path=True))
-# @click.command(short_help='a test command')
-
-
-@click.option('--dev', is_flag=True)
+@click.option('--dev', is_flag=True, help='Development flag. Do not use.')
 @click.option(
     '--save-output',
     required=False,
-    help='Save the output to json files locally. Will use the path parameter if'
-    ' provided else defaults to current working directory.',
+    help='Save the output to json files locally. Will use the path parameter'
+    ' if provided else defaults to current working directory.',
     is_flag=True,
     default=False,
 )
@@ -64,12 +63,27 @@ def cli(
     wordcloud: bool,
     save_output: bool,
 ) -> None:
-    """Search for lyrics statistics of an Artist/Group."""
-    path = ctx.path
-    print(f'home={ctx.home}')
-    # lyrics_obj = list()
-    director = lyrics.LyricsClickDirector()
-    builder = lyrics.LyricsBuilder()
+    """Search for lyrics statistics of an Artist/Group.
+    
+    Parameters
+    ----------
+    ctx : musicbrainzapi.cli.cli.Environment
+        click environment class
+    artist : str
+        artist
+    country : Union[str, None]
+        country
+    dev : bool
+        dev flag - not to be used
+    show_summary : str
+        summary flag - used to display descriptive statistics
+    wordcloud : bool
+        wordcloud flag - used to create a wordcloud from lyrics
+    save_output : bool
+        save output flag - used to save output locally to disk
+    """
+    director = LyricsClickDirector()
+    builder = LyricsBuilder()
     director.builder = builder
     if dev:
         director._dev()
@@ -105,7 +119,9 @@ def cli(
             lyrics_0.all_albums_lyrics_count
         )
         cloud.create_word_cloud()
-        click.confirm('Wordcloud ready - press enter to show.', default=True)
+        show = click.confirm(
+            'Wordcloud ready - press enter to show.', default=True
+        )
         plt.imshow(
             cloud.wc.recolor(
                 color_func=cloud.generate_grey_colours, random_state=3
@@ -113,4 +129,12 @@ def cli(
             interpolation='bilinear',
         )
         plt.axis('off')
-        plt.show()
+        if show:
+            plt.show()
+    if save_output:
+        click.echo(f'Saving output to {ctx.path}')
+        path = ctx.path if ctx.path[-1] == '/' else ctx.path + '/'
+        attr = lyrics_0._attributes
+        for a in attr:
+            with open(f'{path}{a}.json', 'w') as f:
+                json.dump(getattr(lyrics_0, a), f, indent=2)

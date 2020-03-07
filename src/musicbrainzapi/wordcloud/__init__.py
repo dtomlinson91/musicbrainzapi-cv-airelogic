@@ -10,21 +10,44 @@ from PIL import Image
 from wordcloud import STOPWORDS, WordCloud
 import numpy as np
 
-from musicbrainzapi.api.command_builders.lyrics import Lyrics
+from musicbrainzapi.api.lyrics import Lyrics
 
 if typing.TYPE_CHECKING:
     import PIL.PngImagePlugin.PngImageFile
 
 
 class LyricsWordcloud:
-
-    """docstring for LyricsWordcloud"""
+    """Create a word cloud from Lyrics.
+    
+    Attributes
+    ----------
+    all_albums_lyrics_count : list
+        List of all albums + track lyrics counted by each word
+    char_mask : np.array
+        numpy array containing data for the word cloud image
+    freq : collections.Counter
+        Counter object containing counts for all words across all tracks
+    lyrics_list : list
+        List of all words from all lyrics across all tracks.
+    pillow_img : PIL.PngImagePlugin.PngImageFile
+        pillow image of the word cloud base
+    wc : wordcloud.WordCloud
+        WordCloud object
+    """
 
     def __init__(
         self,
         pillow_img: 'PIL.PngImagePlugin.PngImageFile',
         all_albums_lyrics_count: 'Lyrics.all_albums_lyrics_count',
     ):
+        """
+        Parameters
+        ----------
+        pillow_img : PIL.PngImagePlugin.PngImageFile
+            pillow image of the word cloud base
+        all_albums_lyrics_count : Lyrics.all_albums_lyrics_count
+            List of all albums + track lyrics counted by each word
+        """
         self.pillow_img = pillow_img
         self.all_albums_lyrics_count = all_albums_lyrics_count
 
@@ -32,6 +55,13 @@ class LyricsWordcloud:
     def use_microphone(
         cls, all_albums_lyrics_count: 'Lyrics.all_albums_lyrics_count',
     ) -> LyricsWordcloud:
+        """Class method to instantiate with a microphone base image.
+        
+        Parameters
+        ----------
+        all_albums_lyrics_count : Lyrics.all_albums_lyrics_count
+            List of all albums + track lyrics counted by each word
+        """
         mic_resource = resources.path(
             'musicbrainzapi.wordcloud.resources', 'mic.png'
         )
@@ -41,6 +71,12 @@ class LyricsWordcloud:
         return cls(mic_img, all_albums_lyrics_count)
 
     def _get_lyrics_list(self) -> None:
+        """Gets all words from lyrics in a single list + cleans them.
+        
+        Returns
+        -------
+        None
+        """
         self.lyrics_list = list()
         for i in self.all_albums_lyrics_count:
             for album, lyric in i.items():
@@ -64,9 +100,13 @@ class LyricsWordcloud:
         return self
 
     def _get_frequencies(self) -> None:
+        """Get frequencies of words from a list.
+        """
         self.freq = collections.Counter(self.lyrics_list)
 
     def _get_char_mask(self) -> None:
+        """Gets a numpy array for the image file.
+        """
         self.char_mask = np.array(self.pillow_img)
 
     @staticmethod
@@ -81,16 +121,28 @@ class LyricsWordcloud:
         return colour
 
     def _generate_word_cloud(self) -> None:
+        """Generates a word cloud
+        
+        Returns
+        -------
+        None
+        """
         self.wc = WordCloud(
-            max_words=50,
-            width=500,
-            height=500,
+            max_words=150,
+            width=1500,
+            height=1500,
             mask=self.char_mask,
             random_state=1,
         ).generate_from_frequencies(self.freq)
         return self
 
     def _generate_plot(self) -> None:
+        """Plots the wordcloud and sets matplotlib options.
+        
+        Returns
+        -------
+        None
+        """
         plt.imshow(
             self.wc.recolor(
                 color_func=self.generate_grey_colours, random_state=3
@@ -100,13 +152,18 @@ class LyricsWordcloud:
         plt.axis('off')
         return self
 
-    def save_to_disk(self, path: str):
-        pass
-
     def show_word_cloud(self):
+        """Shows the word cloud.
+        """
         plt.show()
 
     def create_word_cloud(self) -> None:
+        """Creates a word cloud
+        
+        Returns
+        -------
+        None
+        """
         self._get_lyrics_list()
         self._get_frequencies()
         self._get_char_mask()
