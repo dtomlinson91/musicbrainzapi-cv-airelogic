@@ -54,7 +54,7 @@ from musicbrainzapi.api.lyrics.director import LyricsClickDirector
 )
 @click.command()
 @pass_environment
-def cli(
+def lyrics(
     ctx,
     artist: str,
     country: Union[str, None],

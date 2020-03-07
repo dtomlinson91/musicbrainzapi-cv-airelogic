@@ -378,7 +378,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
         Returns
         -------
         None
-            Description
         """
         self.all_albums_lyrics_sum = list()
         album_lyrics = self.all_albums_lyrics_count
@@ -390,7 +389,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
             for album, lyrics_list in i.items():
                 album_avg = list()
                 d = addict.Dict()
-                # print(album)
                 for j in lyrics_list:
                     if j != 'No Lyrics':
                         song_total = 0
@@ -407,10 +405,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
                     d = addict.Dict((album, album_avg))
                 # print(d)
                 self.all_albums_lyrics_sum.append(d)
-        # print(count)
-        # with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'w+') as f:
-        #     json.dump(self.all_albums_lyrics_sum, f)
-        # return self
+        return self
 
     def calculate_final_average_by_album(self) -> None:
         """Calculates descriptive statistics by album.
