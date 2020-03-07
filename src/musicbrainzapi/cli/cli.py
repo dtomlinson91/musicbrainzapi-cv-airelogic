@@ -4,6 +4,8 @@ from importlib import import_module
 
 import click
 
+from musicbrainzapi.__version__ import __version__
+from musicbrainzapi.__header__ import __header__
 
 CONTEXT_SETTINGS = dict(auto_envvar_prefix='COMPLEX')
 
@@ -45,17 +47,27 @@ class ComplexCLI(click.MultiCommand):
 
 @click.command(cls=ComplexCLI, context_settings=CONTEXT_SETTINGS)
 @click.option(
-    '--home',
-    type=click.Path(exists=True, file_okay=False, resolve_path=True),
-    help='Changes the folder to operate on.',
+    '-p',
+    '--path',
+    type=click.Path(
+        exists=False, file_okay=False, resolve_path=True, writable=True
+    ),
+    help='Path to save results.',
+    default=os.path.expanduser('~/.musicbrainzapi')
 )
 @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
+@click.version_option(
+    version=__version__,
+    prog_name=__header__,
+    message=f'{__header__} version {__version__} 🎤',
+)
 @pass_environment
-def cli(ctx, verbose, home):
+def cli(ctx, verbose, path):
     """A complex command line interface."""
     ctx.verbose = verbose
-    if home is not None:
-        ctx.home = home
+    if path is not None:
+        click.echo(f'Path set to {os.path.expanduser(path)}')
+        ctx.path = os.path.expanduser(path)
 
 
 if __name__ == '__main__':
