@@ -149,7 +149,7 @@ class LyricsClickDirector:
         -------
         None
         """
-        self.builder.calculate_average_all_albums()
+        self.builder.calculate_track_totals()
         self.builder._product.all_albums_lyrics_sum = (
             self.builder.all_albums_lyrics_sum
         )

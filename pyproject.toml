@@ -5,7 +5,8 @@ description = "Python module to calculate statistics and generate a wordcloud fo
 license = "MIT"
 authors = ["dtomlinson <dtomlinson@panaetius.co.uk>"]
 readme = "/Users/dtomlinson/git-repos/cv/musicbrainzapi/README.rst"
-
+homepage = "https://github.com/dtomlinson91/musicbrainzapi-cv-airelogic"
+repository = "https://github.com/dtomlinson91/musicbrainzapi-cv-airelogic"
 
 [tool.poetry.dependencies]
 python = "^3.7"

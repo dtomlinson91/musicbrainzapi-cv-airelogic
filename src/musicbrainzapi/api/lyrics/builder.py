@@ -372,8 +372,8 @@ class LyricsBuilder(LyricsConcreteBuilder):
         click.echo(f'Processed lyrics for {self.total_track_count} tracks.')
         return self
 
-    def calculate_average_all_albums(self) -> None:
-        """Summary
+    def calculate_track_totals(self) -> None:
+        """Calculates total words for each track across all albums.
 
         Returns
         -------
