@@ -163,9 +163,9 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def sort_artists(self) -> None:
         self._sort_names = dict(
-            (i.get('id'), f'{i.get("sort-name")} | {i.get("disambiguation")}')
+            (i.get('id'), f'{i.get("name")} | {i.get("disambiguation")}')
             if i.get('disambiguation') is not None
-            else (i.get('id'), f'{i.get("sort-name")}')
+            else (i.get('id'), f'{i.get("name")}')
             for i in self.musicbrainz_artists['artist-list']
         )
         return self
@@ -379,9 +379,9 @@ class LyricsBuilder(LyricsConcreteBuilder):
     # rename this
     def calculate_average_all_albums(self) -> None:
         self.all_albums_lyrics_sum = list()
-        # album_lyrics = self.all_albums_lyrics_count
-        with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
-            album_lyrics = json.load(f)
+        album_lyrics = self.all_albums_lyrics_count
+        # with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
+        #     album_lyrics = json.load(f)
         count = 0
         for i in album_lyrics:
             count += len(i)
@@ -434,9 +434,9 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def calculate_final_average_by_year(self) -> None:
         group_by_years = addict.Dict()
         self.year_statistics = addict.Dict()
-        # album_lyrics = self.all_albums_lyrics_sum
-        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
-            album_lyrics = json.load(f)
+        album_lyrics = self.all_albums_lyrics_sum
+        # with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
+        #     album_lyrics = json.load(f)
 
         # Merge years together
         for i in album_lyrics:
@@ -654,6 +654,15 @@ class Lyrics:
     album_statistics: Dict[str, Dict[str, int]]
     year_statistics: Dict[str, Dict[str, int]]
 
+    __attributes = [
+        'all_albums_with_tracks',
+        'all_albums_with_lyrics',
+        'all_albums_lyrics_count',
+        'all_albums_lyrics_sum',
+        'album_statistics',
+        'year_statistics',
+    ]
+
     def __init__(self) -> None:
         pass
 
@@ -665,7 +674,7 @@ class Lyrics:
                 all_averages.append(i['avg'])
             except (TypeError, ValueError):
                 pass
-        print(all_averages)
+        # print(all_averages)
         try:
             final_average = math.ceil(np.mean(all_averages))
         except ValueError:
@@ -674,7 +683,7 @@ class Lyrics:
                 ' albums. This is caused by inconsistent Artist names from'
                 ' Musicbrainz and lyrics.ovh. Try another artist.'
             )
-            raise(SystemExit)
+            raise (SystemExit)
         output = BeautifulTable(max_width=200)
         output.set_style(BeautifulTable.STYLE_BOX_ROUNDED)
         output.column_headers = [
