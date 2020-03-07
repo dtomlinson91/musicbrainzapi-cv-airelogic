@@ -49,6 +49,14 @@ version = "1.5"
 pycodestyle = ">=2.5.0"
 
 [[package]]
+category = "main"
+description = "Print ASCII tables for terminals"
+name = "beautifultable"
+optional = false
+python-versions = "*"
+version = "0.8.0"
+
+[[package]]
 category = "dev"
 description = "The uncompromising code formatter."
 name = "black"
@@ -501,7 +509,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "16e37a137dfee91b8c49b120f770dc04b5361fb91d73ce60b0eae19f64ac2ce5"
+content-hash = "b3e363ce109826fbe16ba73b6102a62254689ead837a371aecd2857fa5ed9f45"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -523,6 +531,10 @@ attrs = [
 ]
 autopep8 = [
     {file = "autopep8-1.5.tar.gz", hash = "sha256:0f592a0447acea0c2b0a9602be1e4e3d86db52badd2e3c84f0193bfd89fd3a43"},
+]
+beautifultable = [
+    {file = "beautifultable-0.8.0-py2.py3-none-any.whl", hash = "sha256:28e2e93d44a4e84511c4869da4b907345435a06728925e295790f24e1d57300c"},
+    {file = "beautifultable-0.8.0.tar.gz", hash = "sha256:d44d9551bbed7bfa88675324f84efb9aa857384d44e9fb21eb530f0a0badb815"},
 ]
 black = [
     {file = "black-19.10b0-py36-none-any.whl", hash = "sha256:1b30e59be925fafc1ee4565e5e08abef6b03fe455102883820fe5ee2e4734e0b"},

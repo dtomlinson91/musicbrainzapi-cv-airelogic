@@ -11,6 +11,7 @@ musicbrainzngs = "^0.7.1"
 addict = "^2.2.1"
 progress = "^1.5"
 numpy = "^1.18.1"
+beautifultable = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
