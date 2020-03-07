@@ -2,7 +2,7 @@
 name = "musicbrainzapi"
 version = "1.0.0"
 description = ""
-authors = ["dtomlinson <dtomlinson@williamhill.co.uk>"]
+authors = ["dtomlinson <dtomlinson@panaetius.co.uk>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -30,6 +30,7 @@ pyls-black = "^0.4.4"
 
 [tool.poetry.plugins."console_scripts"]
 "musicbrainzapi" = "musicbrainzapi.cli.cli:cli"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
