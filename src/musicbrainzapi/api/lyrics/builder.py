@@ -1,107 +1,49 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod, abstractstaticmethod
-from dataclasses import dataclass
-
-# from pprint import pprint
-from typing import Union, List, Dict
 from collections import Counter
 import html
 import json
+import math
 import os
 import string
-import math
+from typing import Union, Dict
 
-from beautifultable import BeautifulTable
-import musicbrainzngs
-import click
 import addict
-import requests
+import click
+import musicbrainzngs
 import numpy as np
+import requests
 
+from musicbrainzapi.api.lyrics.concrete_builder import LyricsConcreteBuilder
+from musicbrainzapi.api.lyrics import Lyrics
 from musicbrainzapi.api import authenticate
 
 
-class LyricsConcreteBuilder(ABC):
-    """docstring for Lyrics"""
-
-    @property
-    @abstractmethod
-    def product(self) -> None:
-        pass
-
-    @property
-    @abstractmethod
-    def artist(self) -> str:
-        pass
-
-    @artist.setter
-    @abstractmethod
-    def artist(self, artist: str) -> None:
-        pass
-
-    @property
-    @abstractmethod
-    def country(self) -> Union[str, None]:
-        pass
-
-    @country.setter
-    @abstractmethod
-    def country(self, country: Union[str, None]) -> None:
-        pass
-
-    @property
-    @abstractmethod
-    def artist_id(self) -> str:
-        pass
-
-    @artist_id.setter
-    @abstractmethod
-    def artist_id(self, artist_id: str) -> None:
-        pass
-
-    @abstractstaticmethod
-    def set_useragent():
-        authenticate.set_useragent()
-
-    # @abstractstaticmethod
-    # def browse_releases(self) -> dict:
-    #     pass
-
-    @abstractmethod
-    def __init__(self) -> None:
-        pass
-
-    @abstractmethod
-    def reset(self) -> None:
-        pass
-
-    @abstractmethod
-    def find_artists(self) -> None:
-        pass
-
-    @abstractmethod
-    def sort_artists(self) -> None:
-        pass
-
-    @abstractmethod
-    def get_accuracy_scores(self) -> None:
-        pass
-
-    @abstractmethod
-    def get_top_five_results(self) -> None:
-        pass
-
-    @abstractmethod
-    def find_all_albums(self) -> None:
-        pass
-
-    @abstractmethod
-    def find_all_tracks(self) -> None:
-        pass
-
-
 class LyricsBuilder(LyricsConcreteBuilder):
-    """docstring for LyricsBuilder"""
+    """docstring for LyricsBuilder
+
+    Attributes
+    ----------
+    album_statistics : addict.Dict
+        Dictionary containing album statistics
+    all_albums : list
+        List of all albums + track titles
+    all_albums_lyrics : list
+        List of all albums + track lyrics
+    all_albums_lyrics_count : list
+        List of all albums + track lyrics counted by each word
+    all_albums_lyrics_sum : list
+        List of all albums + track lyrics counted and summed up.
+    all_albums_lyrics_url : list
+        List of all albums + link to lyrics api for each track.
+    musicbrainz_artists : addict.Dict
+        Dictionary of response from Musicbrainzapi
+    release_group_ids : addict.Dict
+        Dictionary of Musicbrainz release-group ids
+    total_track_count : int
+        Total number of tracks across all albums
+    year_statistics : addict.Dict
+        Dictionary containing album statistics
+    """
 
     @property
     def product(self) -> Lyrics:
@@ -152,25 +94,44 @@ class LyricsBuilder(LyricsConcreteBuilder):
         self.reset()
 
     def reset(self) -> None:
+        """Reset the builder and create new product.
+        """
         self._product = Lyrics()
 
     def find_artists(self) -> None:
+        """Find artists from the musicbrainz api
+
+        Returns
+        -------
+        None
+        """
         self.musicbrainz_artists = musicbrainzngs.search_artists(
             artist=self.artist, country=self.country
         )
-        # pprint(self.musicbrainz_artists['artist-list'])
         return self
 
     def sort_artists(self) -> None:
+        """Sort the artists from the Musicbrainzapi
+
+        Returns
+        -------
+        None
+        """
         self._sort_names = dict(
-            (i.get('id'), f'{i.get("sort-name")} | {i.get("disambiguation")}')
+            (i.get('id'), f'{i.get("name")} | {i.get("disambiguation")}')
             if i.get('disambiguation') is not None
-            else (i.get('id'), f'{i.get("sort-name")}')
+            else (i.get('id'), f'{i.get("name")}')
             for i in self.musicbrainz_artists['artist-list']
         )
         return self
 
     def get_accuracy_scores(self) -> None:
+        """Get accuracy scores from the Musicbrainzapi
+
+        Returns
+        -------
+        None
+        """
         self._accuracy_scores = dict(
             (i.get('id'), int(i.get('ext:score', '0')))
             for i in self.musicbrainz_artists['artist-list']
@@ -178,6 +139,12 @@ class LyricsBuilder(LyricsConcreteBuilder):
         return self
 
     def get_top_five_results(self) -> None:
+        """Get the top five artists from the Musicbrainzapi
+
+        Returns
+        -------
+        None
+        """
         self._top_five_results = dict(
             (i, self._accuracy_scores.get(i))
             for i in sorted(
@@ -189,6 +156,12 @@ class LyricsBuilder(LyricsConcreteBuilder):
         return self
 
     def find_all_albums(self) -> None:
+        """Find all albums for the chosen artist
+
+        Returns
+        -------
+        None
+        """
         limit, offset, page = (100, 0, 1)
 
         resp_0 = addict.Dict(
@@ -245,6 +218,12 @@ class LyricsBuilder(LyricsConcreteBuilder):
         return self
 
     def find_all_tracks(self) -> None:
+        """Find all tracks from all albums.
+
+        Returns
+        -------
+        None
+        """
         self.all_albums = list()
         total_albums = len(self.release_group_ids)
         self.total_track_count = 0
@@ -309,6 +288,12 @@ class LyricsBuilder(LyricsConcreteBuilder):
         return self
 
     def find_lyrics_urls(self) -> None:
+        """Construct the URL for the lyrics api.
+
+        Returns
+        -------
+        None
+        """
         self.all_albums_lyrics_url = list()
         for x in self.all_albums:
             for alb, tracks in x.items():
@@ -326,8 +311,13 @@ class LyricsBuilder(LyricsConcreteBuilder):
         # pprint(self.all_albums_lyrics_url)
         return self
 
-    # change this for progressbar for i loop
     def find_all_lyrics(self) -> None:
+        """Get lyrics for each track from the lyrics api
+
+        Returns
+        -------
+        None
+        """
         self.all_albums_lyrics = list()
 
         with click.progressbar(
@@ -335,22 +325,28 @@ class LyricsBuilder(LyricsConcreteBuilder):
             label=f'Finding lyrics for {self.total_track_count}'
             f' tracks for {self.artist}. This may take some time! ☕️',
         ) as bar:
+            bar.update(5)
             for x in self.all_albums_lyrics_url:
                 for alb, urls in x.items():
-                    bar.update(1)
+                    # bar.update(1)
                     update = len(urls)
                     lyrics = addict.Dict(
                         (alb, [self.request_lyrics_from_url(i) for i in urls])
                     )
                     self.all_albums_lyrics.append(lyrics)
-                    bar.update(update - 1)
+                    bar.update(update)
 
         with open(f'{os.getcwd()}/all_albums_lyrics.json', 'w') as f:
             json.dump(self.all_albums_lyrics, f, indent=2)
         return self
 
     def count_words_in_lyrics(self) -> None:
-        # remove punctuation, fix click bar
+        """Count all words in each track
+
+        Returns
+        -------
+        None
+        """
         self.all_albums_lyrics_count = list()
         # print(self.total_track_count)
         with click.progressbar(
@@ -376,12 +372,18 @@ class LyricsBuilder(LyricsConcreteBuilder):
         click.echo(f'Processed lyrics for {self.total_track_count} tracks.')
         return self
 
-    # rename this
     def calculate_average_all_albums(self) -> None:
+        """Summary
+
+        Returns
+        -------
+        None
+            Description
+        """
         self.all_albums_lyrics_sum = list()
-        # album_lyrics = self.all_albums_lyrics_count
-        with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
-            album_lyrics = json.load(f)
+        album_lyrics = self.all_albums_lyrics_count
+        # with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
+        #     album_lyrics = json.load(f)
         count = 0
         for i in album_lyrics:
             count += len(i)
@@ -406,15 +408,17 @@ class LyricsBuilder(LyricsConcreteBuilder):
                 # print(d)
                 self.all_albums_lyrics_sum.append(d)
         # print(count)
-        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'w+') as f:
-            json.dump(self.all_albums_lyrics_sum, f)
-        return self
+        # with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'w+') as f:
+        #     json.dump(self.all_albums_lyrics_sum, f)
+        # return self
 
     def calculate_final_average_by_album(self) -> None:
+        """Calculates descriptive statistics by album.
+        """
         self.album_statistics = addict.Dict()
-        # album_lyrics = self.all_albums_lyrics_sum
-        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
-            album_lyrics = json.load(f)
+        album_lyrics = self.all_albums_lyrics_sum
+        # with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
+        #     album_lyrics = json.load(f)
 
         for i in album_lyrics:
             for album, count in i.items():
@@ -426,17 +430,18 @@ class LyricsBuilder(LyricsConcreteBuilder):
                 self.album_statistics = addict.Dict(
                     **self.album_statistics, **addict.Dict((album, _d))
                 )
-        with open(f'{os.getcwd()}/album_statistics.json', 'w') as f:
-            json.dump(self.album_statistics, f, indent=2)
+        # with open(f'{os.getcwd()}/album_statistics.json', 'w') as f:
+        #     json.dump(self.album_statistics, f, indent=2)
         # pprint(self.album_statistics)
 
-    # implement above in this
     def calculate_final_average_by_year(self) -> None:
+        """Calculates descriptive statistic by year.
+        """
         group_by_years = addict.Dict()
         self.year_statistics = addict.Dict()
-        # album_lyrics = self.all_albums_lyrics_sum
-        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
-            album_lyrics = json.load(f)
+        album_lyrics = self.all_albums_lyrics_sum
+        # with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
+        #     album_lyrics = json.load(f)
 
         # Merge years together
         for i in album_lyrics:
@@ -464,12 +469,38 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     @staticmethod
     def construct_lyrics_url(artist: str, song: str) -> str:
+        """Builds the URL for the lyrics api.
+
+        Parameters
+        ----------
+        artist : str
+            Artist
+        song : str
+            Track title
+
+        Returns
+        -------
+        str
+            URL for lyrics from the lyrics api.
+        """
         lyrics_api_base = 'https://api.lyrics.ovh/v1'
         lyrics_api_url = html.escape(f'{lyrics_api_base}/{artist}/{song}')
         return lyrics_api_url
 
     @staticmethod
     def request_lyrics_from_url(url: str) -> str:
+        """Gets lyrics from the lyrics api.
+
+        Parameters
+        ----------
+        url : str
+            URL of the track for the lyrics api.
+
+        Returns
+        -------
+        str
+            Lyrics of the trakc
+        """
         resp = requests.get(url)
 
         # No lyrics for a song will return a key of 'error', we pass on this.
@@ -481,11 +512,35 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     @staticmethod
     def strip_punctuation(word: str) -> str:
+        """Removes punctuation from lyrics.
+
+        Parameters
+        ----------
+        word : str
+            Word to remove punctuation from.
+
+        Returns
+        -------
+        str
+            Same word without any punctuation.
+        """
         _strip = word.translate(str.maketrans('', '', string.punctuation))
         return _strip
 
     @staticmethod
     def get_descriptive_statistics(nums: list) -> Dict[str, int]:
+        """Calculates descriptive statistics.
+
+        Parameters
+        ----------
+        nums : list
+            A list containing total number of words from a track.
+
+        Returns
+        -------
+        Dict[str, int]
+            Dictionary of statistic and value.
+        """
         if len(nums) == 0:
             return
         avg = math.ceil(np.mean(nums))
@@ -511,232 +566,3 @@ class LyricsBuilder(LyricsConcreteBuilder):
             ('count', count),
         )
         return _d
-
-
-class LyricsClickDirector:
-    """docstring for LyricsClickDirector"""
-
-    def __init__(self) -> None:
-        self._builder = None
-
-    @property
-    def builder(self) -> LyricsBuilder:
-        return self._builder
-
-    @builder.setter
-    def builder(self, builder: LyricsBuilder) -> None:
-        self._builder = builder
-
-    def _get_initial_artists(self, artist: str, country: str) -> None:
-        self.builder.artist = artist
-        self.builder.country = country
-        self.builder.set_useragent()
-        self.builder.find_artists()
-        self.builder.sort_artists()
-        self.builder.get_accuracy_scores()
-        self.builder.get_top_five_results()
-        return self
-
-    def _confirm_final_artist(self) -> None:
-        artist_meta = None
-        for i, j in self.builder._top_five_results.items():
-            artist_meta = 'Multiple' if j <= 100 else None
-
-        if artist_meta == 'Multiple':
-            _position = []
-            click.echo(
-                click.style(
-                    f'Musicbrainz found several results for '
-                    f'{self.builder.artist[0]}. Which artist/group do you want'
-                    '?',
-                    fg='green',
-                )
-            )
-            for i, j in zip(self.builder._top_five_results, range(1, 6)):
-                click.echo(
-                    f'[{j}] {self.builder._sort_names.get(i)}'
-                    f' ({self.builder._accuracy_scores.get(i)}% match)'
-                )
-                _position.append(i)
-            chosen = int(
-                click.prompt(
-                    click.style(f'Enter choice, default is', blink=True),
-                    default=1,
-                    type=click.IntRange(
-                        1, len(self.builder._top_five_results)
-                    ),
-                )
-            )
-            choice = _position[chosen - 1]
-            click.echo(f'You chose {self.builder._sort_names.get(choice)}')
-            self._artist = self.builder._sort_names.get(choice).split('|')[0]
-            self._artist_id = choice
-
-            # Set artist and artistID on builder + product
-            self.builder.artist_id = self._artist_id
-            self.builder.artist = self._artist
-
-        elif artist_meta is None:
-            click.echo(
-                f'Musicbrainz did not find any results for '
-                f'{self.builder.artist[0]}. Check the spelling or consider '
-                'alternative names that the artist/group may go by.'
-            )
-            raise SystemExit()
-        return self
-
-    def _query_for_data(self) -> None:
-        self.builder.find_all_albums()
-        self.builder.find_all_tracks()
-        self.builder._product.all_albums_with_tracks = self.builder.all_albums
-        return self
-
-    def _get_lyrics(self) -> None:
-        self.builder.find_lyrics_urls()
-        self.builder.find_all_lyrics()
-        self.builder._product.all_albums_with_lyrics = (
-            self.builder.all_albums_lyrics
-        )
-        self.builder.count_words_in_lyrics()
-        with open(f'{os.getcwd()}/lyrics_count.json', 'w+') as file:
-            json.dump(
-                self.builder.all_albums_lyrics_count,
-                file,
-                indent=2,
-                sort_keys=True,
-            )
-        self.builder._product.all_albums_lyrics_count = (
-            self.builder.all_albums_lyrics_count
-        )
-        return self
-
-    def _calculate_basic_statistics(self) -> None:
-        self.builder.calculate_average_all_albums()
-        self.builder._product.all_albums_lyrics_sum = (
-            self.builder.all_albums_lyrics_sum
-        )
-        return self
-
-    def _calculate_descriptive_statistics(self) -> None:
-        self.builder.calculate_final_average_by_album()
-        self.builder.calculate_final_average_by_year()
-        self.builder._product.album_statistics = self.builder.album_statistics
-        self.builder._product.year_statistics = self.builder.year_statistics
-        return self
-
-    def _dev(self) -> None:
-        self.builder.calculate_final_average_by_album()
-        self.builder.calculate_final_average_by_year()
-        self.builder._product.album_statistics = self.builder.album_statistics
-        self.builder._product.year_statistics = self.builder.year_statistics
-        self.builder._product.artist_id = None
-        self.builder._product.artist = 'Katzenjammer'
-        self.builder._product.show_summary()
-        self.builder._product.show_summary_statistics(group_by='year')
-        return self
-
-    @staticmethod
-    def _get_product(builder_inst: LyricsBuilder) -> Lyrics:
-        return builder_inst._product
-
-
-@dataclass
-class Lyrics:
-    """docstring for Lyrics"""
-
-    artist_id: str
-    artist: str
-    country: Union[str, None]
-    all_albums_with_tracks: List[Dict[str, List[str]]]
-    all_albums_with_lyrics: List[Dict[str, List[str]]]
-    all_albums_lyrics_count: List[Dict[str, List[List[str, int]]]]
-    all_albums_lyrics_sum: List[Dict[str, List[int, str]]]
-    album_statistics: Dict[str, Dict[str, int]]
-    year_statistics: Dict[str, Dict[str, int]]
-
-    def __init__(self) -> None:
-        pass
-
-    def show_summary(self):
-        all_averages = []
-
-        for i in self.album_statistics.values():
-            try:
-                all_averages.append(i['avg'])
-            except (TypeError, ValueError):
-                pass
-        print(all_averages)
-        try:
-            final_average = math.ceil(np.mean(all_averages))
-        except ValueError:
-            click.echo(
-                'Oops! https://lyrics.ovh couldn\'t find any lyrics across all'
-                ' albums. This is caused by inconsistent Artist names from'
-                ' Musicbrainz and lyrics.ovh. Try another artist.'
-            )
-            raise(SystemExit)
-        output = BeautifulTable(max_width=200)
-        output.set_style(BeautifulTable.STYLE_BOX_ROUNDED)
-        output.column_headers = [
-            'Average number of words in tracks across all albums\n'
-            f'for {self.artist}'
-        ]
-        output.append_row([final_average])
-        click.echo(output)
-
-        return self
-
-    def show_summary_statistics(self, group_by: str) -> None:
-        stats_obj = getattr(self, f'{group_by}_statistics')
-        stats = [
-            'avg',
-            'std',
-            'min',
-            'max',
-            'median',
-            'count',
-            'p_10',
-            'p_25',
-            'p_75',
-            'p_90',
-        ]
-        output_0 = BeautifulTable(max_width=200)
-        output_0.set_style(BeautifulTable.STYLE_BOX_ROUNDED)
-        output_0.column_headers = [
-            'Descriptive statistics for number of words in tracks across all'
-            f' {group_by}s\nfor {self.artist}'
-        ]
-        output_1 = BeautifulTable(max_width=200)
-        output_1.set_style(BeautifulTable.STYLE_BOX_ROUNDED)
-        output_1.column_headers = [
-            group_by,
-            stats[0],
-            stats[1],
-            stats[2],
-            stats[3],
-            stats[4],
-            stats[5],
-            stats[6],
-            stats[7],
-            stats[8],
-            stats[9],
-        ]
-        for group, s in stats_obj.items():
-            output_1.append_row(
-                [
-                    group,
-                    s.get(stats[0]),
-                    s.get(stats[1]),
-                    s.get(stats[2]),
-                    s.get(stats[3]),
-                    s.get(stats[4]),
-                    s.get(stats[5]),
-                    s.get(stats[6]),
-                    s.get(stats[7]),
-                    s.get(stats[8]),
-                    s.get(stats[9]),
-                ]
-            )
-        output_0.append_row([output_1])
-        click.echo(output_0)
-        return self
