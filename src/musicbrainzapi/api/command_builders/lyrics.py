@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod, abstractstaticmethod
 from dataclasses import dataclass
 
-# from pprint import pprint
+from pprint import pprint
 from typing import Union, List, Dict
 from collections import Counter
 import html
@@ -159,6 +159,9 @@ class LyricsBuilder(LyricsConcreteBuilder):
             artist=self.artist, country=self.country
         )
         # pprint(self.musicbrainz_artists['artist-list'])
+        # for i in self.musicbrainz_artists['artist-list']:
+            # print(i['name'])
+        # raise(SystemExit)
         return self
 
     def sort_artists(self) -> None:
@@ -335,15 +338,16 @@ class LyricsBuilder(LyricsConcreteBuilder):
             label=f'Finding lyrics for {self.total_track_count}'
             f' tracks for {self.artist}. This may take some time! ☕️',
         ) as bar:
+            bar.update(5)
             for x in self.all_albums_lyrics_url:
                 for alb, urls in x.items():
-                    bar.update(1)
+                    # bar.update(1)
                     update = len(urls)
                     lyrics = addict.Dict(
                         (alb, [self.request_lyrics_from_url(i) for i in urls])
                     )
                     self.all_albums_lyrics.append(lyrics)
-                    bar.update(update - 1)
+                    bar.update(update)
 
         with open(f'{os.getcwd()}/all_albums_lyrics.json', 'w') as f:
             json.dump(self.all_albums_lyrics, f, indent=2)
@@ -679,8 +683,8 @@ class Lyrics:
             final_average = math.ceil(np.mean(all_averages))
         except ValueError:
             click.echo(
-                'Oops! https://lyrics.ovh couldn\'t find any lyrics across all'
-                ' albums. This is caused by inconsistent Artist names from'
+                'Oops! https://lyrics.ovh couldn\'t find any lyrics across any'
+                ' album. This is caused by inconsistent Artist names from'
                 ' Musicbrainz and lyrics.ovh. Try another artist.'
             )
             raise (SystemExit)

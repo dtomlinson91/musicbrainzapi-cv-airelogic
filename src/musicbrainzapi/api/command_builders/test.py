@@ -1,6 +1,6 @@
 import json
 from pprint import pprint
-
+from wordcloud import WordCloud
 
 words = [
     {
@@ -37576,3 +37576,5 @@ for i in words:
             # except (TypeError, IndexError):
             #     pass
 print(all_words)
+
+wc = WordCloud(background_color="white", max_words=200, width=400, height=400, mask=char_mask, random_state=1).generate(all_words)
