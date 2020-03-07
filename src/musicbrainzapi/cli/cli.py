@@ -33,12 +33,7 @@ class ComplexCLI(click.MultiCommand):
 
     def get_command(self, ctx, name):
         try:
-            if sys.version_info[0] == 2:
-                name = name.encode('ascii', 'replace')
             mod = import_module(f'musicbrainzapi.cli.commands.cmd_{name}')
-            # mod = __import__(
-            #     'complex.commands.cmd_' + name, None, None, ['cli']
-            # )
         except ImportError as e:
             print(e)
             return
@@ -50,23 +45,23 @@ class ComplexCLI(click.MultiCommand):
     '-p',
     '--path',
     type=click.Path(
-        exists=False, file_okay=False, resolve_path=True, writable=True
+        exists=True, file_okay=False, resolve_path=True, writable=True
     ),
     help='Path to save results.',
-    default=os.path.expanduser('~/.musicbrainzapi')
+    default=os.getcwd()
 )
-@click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
+# @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
 @click.version_option(
     version=__version__,
     prog_name=__header__,
     message=f'{__header__} version {__version__} 🎤',
 )
 @pass_environment
-def cli(ctx, verbose, path):
+def cli(ctx, path):
     """A complex command line interface."""
-    ctx.verbose = verbose
+    # ctx.verbose = verbose
     if path is not None:
-        click.echo(f'Path set to {os.path.expanduser(path)}')
+        # click.echo(f'Path set to {os.path.expanduser(path)}')
         ctx.path = os.path.expanduser(path)
 
 

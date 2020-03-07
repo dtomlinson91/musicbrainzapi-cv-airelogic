@@ -2,8 +2,11 @@ from typing import Union
 
 import click
 
+import matplotlib.pyplot as plt
+
 from musicbrainzapi.cli.cli import pass_environment
 from musicbrainzapi.api.command_builders import lyrics
+import musicbrainzapi.wordcloud
 
 
 # @click.argument('path', required=False, type=click.Path(resolve_path=True))
@@ -17,7 +20,14 @@ from musicbrainzapi.api.command_builders import lyrics
     help='Save the output to json files locally. Will use the path parameter if'
     ' provided else defaults to current working directory.',
     is_flag=True,
-    default=False
+    default=False,
+)
+@click.option(
+    '--wordcloud',
+    required=False,
+    help='Generate a wordcloud from lyrics.',
+    is_flag=True,
+    default=False,
 )
 @click.option(
     '--show-summary',
@@ -51,9 +61,12 @@ def cli(
     country: Union[str, None],
     dev: bool,
     show_summary: str,
-    save_output: bool
+    wordcloud: bool,
+    save_output: bool,
 ) -> None:
     """Search for lyrics statistics of an Artist/Group."""
+    path = ctx.path
+    print(f'home={ctx.home}')
     # lyrics_obj = list()
     director = lyrics.LyricsClickDirector()
     builder = lyrics.LyricsBuilder()
@@ -70,16 +83,34 @@ def cli(
     director._calculate_basic_statistics()
     if show_summary is not None:
         director._calculate_descriptive_statistics()
-    
+
     # Get the Lyrics object
     lyrics_0 = director.builder.product
     # lyrics_obj.append(lyrics_0)
 
     # Show basic count
     lyrics_0.show_summary()
+
     # Show summary statistics
     if show_summary == 'all':
         lyrics_0.show_summary_statistics(group_by='album')
         lyrics_0.show_summary_statistics(group_by='year')
     elif show_summary in ['album', 'year']:
         lyrics_0.show_summary_statistics(group_by=show_summary)
+
+    # Show wordcloud
+    if wordcloud:
+        click.echo('Generating wordcloud')
+        cloud = musicbrainzapi.wordcloud.LyricsWordcloud.use_microphone(
+            lyrics_0.all_albums_lyrics_count
+        )
+        cloud.create_word_cloud()
+        click.confirm('Wordcloud ready - press enter to show.', default=True)
+        plt.imshow(
+            cloud.wc.recolor(
+                color_func=cloud.generate_grey_colours, random_state=3
+            ),
+            interpolation='bilinear',
+        )
+        plt.axis('off')
+        plt.show()

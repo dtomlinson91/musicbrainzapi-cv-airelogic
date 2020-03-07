@@ -383,9 +383,9 @@ class LyricsBuilder(LyricsConcreteBuilder):
     # rename this
     def calculate_average_all_albums(self) -> None:
         self.all_albums_lyrics_sum = list()
-        album_lyrics = self.all_albums_lyrics_count
-        # with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
-        #     album_lyrics = json.load(f)
+        # album_lyrics = self.all_albums_lyrics_count
+        with open(f'{os.getcwd()}/lyrics_count.json', 'r') as f:
+            album_lyrics = json.load(f)
         count = 0
         for i in album_lyrics:
             count += len(i)
@@ -438,9 +438,9 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def calculate_final_average_by_year(self) -> None:
         group_by_years = addict.Dict()
         self.year_statistics = addict.Dict()
-        album_lyrics = self.all_albums_lyrics_sum
-        # with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
-        #     album_lyrics = json.load(f)
+        # album_lyrics = self.all_albums_lyrics_sum
+        with open(f'{os.getcwd()}/lyrics_sum_all_album.json', 'r') as f:
+            album_lyrics = json.load(f)
 
         # Merge years together
         for i in album_lyrics:
@@ -735,21 +735,24 @@ class Lyrics:
             stats[9],
         ]
         for group, s in stats_obj.items():
-            output_1.append_row(
-                [
-                    group,
-                    s.get(stats[0]),
-                    s.get(stats[1]),
-                    s.get(stats[2]),
-                    s.get(stats[3]),
-                    s.get(stats[4]),
-                    s.get(stats[5]),
-                    s.get(stats[6]),
-                    s.get(stats[7]),
-                    s.get(stats[8]),
-                    s.get(stats[9]),
-                ]
-            )
+            try:
+                output_1.append_row(
+                    [
+                        group,
+                        s.get(stats[0]),
+                        s.get(stats[1]),
+                        s.get(stats[2]),
+                        s.get(stats[3]),
+                        s.get(stats[4]),
+                        s.get(stats[5]),
+                        s.get(stats[6]),
+                        s.get(stats[7]),
+                        s.get(stats[8]),
+                        s.get(stats[9]),
+                    ]
+                )
+            except AttributeError:
+                continue
         output_0.append_row([output_1])
         click.echo(output_0)
         return self
