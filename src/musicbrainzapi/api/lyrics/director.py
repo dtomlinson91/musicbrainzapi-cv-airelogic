@@ -25,17 +25,13 @@ class LyricsClickDirector:
 
     def _get_initial_artists(self, artist: str, country: str) -> None:
         """Search Musicbrainz api for an artist
-        
+
         Parameters
         ----------
         artist : str
             Artist to search for
         country : str
             Country artist comes from.
-        
-        Returns
-        -------
-        None
         """
         self.builder.artist = artist
         self.builder.country = country
@@ -48,11 +44,7 @@ class LyricsClickDirector:
 
     def _confirm_final_artist(self) -> None:
         """Confirm the artist from the user.
-        
-        Returns
-        -------
-        None
-        
+
         Raises
         ------
         SystemExit
@@ -107,10 +99,6 @@ class LyricsClickDirector:
 
     def _query_for_data(self) -> None:
         """Query Musicbrainz api for albums + track data.
-        
-        Returns
-        -------
-        None
         """
         self.builder.find_all_albums()
         self.builder.find_all_tracks()
@@ -119,10 +107,6 @@ class LyricsClickDirector:
 
     def _get_lyrics(self) -> None:
         """Get Lyrics for each track
-        
-        Returns
-        -------
-        None
         """
         self.builder.find_lyrics_urls()
         self.builder.find_all_lyrics()
@@ -144,10 +128,6 @@ class LyricsClickDirector:
 
     def _calculate_basic_statistics(self) -> None:
         """Calculate a basic average for all tracks.
-        
-        Returns
-        -------
-        None
         """
         self.builder.calculate_track_totals()
         self.builder._product.all_albums_lyrics_sum = (
@@ -157,10 +137,6 @@ class LyricsClickDirector:
 
     def _calculate_descriptive_statistics(self) -> None:
         """Calculate descriptive statistics for album and/or year.
-        
-        Returns
-        -------
-        None
         """
         self.builder.calculate_final_average_by_album()
         self.builder.calculate_final_average_by_year()
@@ -170,10 +146,6 @@ class LyricsClickDirector:
 
     def _dev(self) -> None:
         """Dev function - used for testing
-        
-        Returns
-        -------
-        None
         """
         self.builder.calculate_final_average_by_album()
         self.builder.calculate_final_average_by_year()
@@ -188,12 +160,12 @@ class LyricsClickDirector:
     @staticmethod
     def _get_product(builder_inst: LyricsBuilder) -> Lyrics:
         """Returns the constructed Lyrics object
-        
+
         Parameters
         ----------
         builder_inst : LyricsBuilder
             Builder class for Lyrics object
-        
+
         Returns
         -------
         Lyrics

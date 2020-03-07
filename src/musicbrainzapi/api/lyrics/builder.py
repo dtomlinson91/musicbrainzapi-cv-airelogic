@@ -100,10 +100,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def find_artists(self) -> None:
         """Find artists from the musicbrainz api
-
-        Returns
-        -------
-        None
         """
         self.musicbrainz_artists = musicbrainzngs.search_artists(
             artist=self.artist, country=self.country
@@ -112,10 +108,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def sort_artists(self) -> None:
         """Sort the artists from the Musicbrainzapi
-
-        Returns
-        -------
-        None
         """
         self._sort_names = dict(
             (i.get('id'), f'{i.get("name")} | {i.get("disambiguation")}')
@@ -127,10 +119,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def get_accuracy_scores(self) -> None:
         """Get accuracy scores from the Musicbrainzapi
-
-        Returns
-        -------
-        None
         """
         self._accuracy_scores = dict(
             (i.get('id'), int(i.get('ext:score', '0')))
@@ -140,10 +128,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def get_top_five_results(self) -> None:
         """Get the top five artists from the Musicbrainzapi
-
-        Returns
-        -------
-        None
         """
         self._top_five_results = dict(
             (i, self._accuracy_scores.get(i))
@@ -157,10 +141,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def find_all_albums(self) -> None:
         """Find all albums for the chosen artist
-
-        Returns
-        -------
-        None
         """
         limit, offset, page = (100, 0, 1)
 
@@ -219,10 +199,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def find_all_tracks(self) -> None:
         """Find all tracks from all albums.
-
-        Returns
-        -------
-        None
         """
         self.all_albums = list()
         total_albums = len(self.release_group_ids)
@@ -289,10 +265,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def find_lyrics_urls(self) -> None:
         """Construct the URL for the lyrics api.
-
-        Returns
-        -------
-        None
         """
         self.all_albums_lyrics_url = list()
         for x in self.all_albums:
@@ -313,10 +285,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def find_all_lyrics(self) -> None:
         """Get lyrics for each track from the lyrics api
-
-        Returns
-        -------
-        None
         """
         self.all_albums_lyrics = list()
 
@@ -342,10 +310,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def count_words_in_lyrics(self) -> None:
         """Count all words in each track
-
-        Returns
-        -------
-        None
         """
         self.all_albums_lyrics_count = list()
         # print(self.total_track_count)
@@ -374,10 +338,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     def calculate_track_totals(self) -> None:
         """Calculates total words for each track across all albums.
-
-        Returns
-        -------
-        None
         """
         self.all_albums_lyrics_sum = list()
         album_lyrics = self.all_albums_lyrics_count
