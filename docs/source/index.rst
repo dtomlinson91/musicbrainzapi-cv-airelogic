@@ -7,6 +7,7 @@ Table of Contents
    :caption: Contents
 
    introduction
+   CLI
    changelog
 
 .. toctree::
