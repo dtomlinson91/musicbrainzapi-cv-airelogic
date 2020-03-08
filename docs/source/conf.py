@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx_click.ext',
+    'sphinx.ext.intersphinx'
 ]
 
 # -- Napoleon Settings -----------------------------------------------------
@@ -60,7 +61,7 @@ autodoc_member_order = 'bysource'
 templates_path = ['_templates']
 
 # The master toctree document.
-master_doc = 'introduction'
+master_doc = 'index'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
