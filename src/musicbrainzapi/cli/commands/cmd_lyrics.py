@@ -64,23 +64,6 @@ def lyrics(
     save_output: bool,
 ) -> None:
     """Search for lyrics statistics of an Artist/Group.
-    
-    Parameters
-    ----------
-    ctx : musicbrainzapi.cli.cli.Environment
-        click environment class
-    artist : str
-        artist
-    country : Union[str, None]
-        country
-    dev : bool
-        dev flag - not to be used
-    show_summary : str
-        summary flag - used to display descriptive statistics
-    wordcloud : bool
-        wordcloud flag - used to create a wordcloud from lyrics
-    save_output : bool
-        save output flag - used to save output locally to disk
     """
     director = LyricsClickDirector()
     builder = LyricsBuilder()
