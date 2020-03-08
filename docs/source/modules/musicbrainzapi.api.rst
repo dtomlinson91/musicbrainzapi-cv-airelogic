@@ -1,17 +1,26 @@
-musicbrainzapi.api
---------------------------------------------------------------------------
+musicbrainzapi.api package
+===========================
 
 .. automodule:: musicbrainzapi.api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:
 
-
-.. toctree::
-
-   musicbrainzapi.api.lyrics
+Subpackages
+===========
 
 .. toctree::
+    musicbrainzapi.lyrics
 
-   musicbrainzapi.api.authenticate
+Submodules
+==========
+
+musicbrainzapi.api.authenticate
+-------------------------------
+
+.. automodule:: musicbrainzapi.api.authenticate
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:

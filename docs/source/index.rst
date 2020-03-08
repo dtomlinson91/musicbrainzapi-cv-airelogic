@@ -12,17 +12,9 @@ Table of Contents
 
 .. toctree::
    :maxdepth: 2
-   :caption: Modules
+   :caption: API
 
-   modules/musicbrainzapi.rst
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Submodules
-
-   modules/musicbrainzapi.api.rst
-   modules/musicbrainzapi.cli.rst
-   modules/musicbrainzapi.wordcloud.rst
+   modules/modules
 
 .. toctree::
    :caption: Table of Contents
