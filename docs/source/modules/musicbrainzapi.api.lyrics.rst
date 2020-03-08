@@ -1,6 +1,4 @@
-.. include:: ../global.rst
-
-musicbrainzapi.api.lyrics :modname:`musicbrainzapi.api.lyrics`
+musicbrainzapi.api.lyrics
 --------------------------------------------------------------------------
 
 .. automodule:: musicbrainzapi.api.lyrics
