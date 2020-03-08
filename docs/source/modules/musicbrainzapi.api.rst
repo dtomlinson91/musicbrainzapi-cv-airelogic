@@ -8,16 +8,18 @@ musicbrainzapi.api package
     :private-members:
 
 Subpackages
-===========
+-----------
 
 .. toctree::
+    :maxdepth: 1
+
     musicbrainzapi.api.lyrics
 
 Submodules
-==========
+----------
 
-musicbrainzapi.api.authenticate
--------------------------------
+musicbrainzapi.api.authenticate module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: musicbrainzapi.api.authenticate
     :members:

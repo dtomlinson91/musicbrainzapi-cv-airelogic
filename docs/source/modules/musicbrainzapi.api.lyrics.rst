@@ -8,7 +8,10 @@ musicbrainzapi.api.lyrics package
     :private-members:
 
 Submodules
-==========
+----------
+
+musicbrainzapi.api.lyrics.builder module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: musicbrainzapi.api.lyrics.builder
     :members:
@@ -16,11 +19,17 @@ Submodules
     :show-inheritance:
     :private-members:
 
+musicbrainzapi.api.lyrics.concrete_builder module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. automodule:: musicbrainzapi.api.lyrics.concrete_builder
     :members:
     :undoc-members:
     :show-inheritance:
     :private-members:
+
+musicbrainzapi.api.lyrics.director module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: musicbrainzapi.api.lyrics.director
     :members:
