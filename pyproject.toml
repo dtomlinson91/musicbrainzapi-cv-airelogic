@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "musicbrainzapi"
 version = "1.0.0"
-description = ""
+description = "Python module to calculate statistics and generate a wordcloud for a given artist. Uses the Musicbrainz API and the lyrics.ovh API."
+license = "MIT"
 authors = ["dtomlinson <dtomlinson@panaetius.co.uk>"]
+readme = "/Users/dtomlinson/git-repos/cv/musicbrainzapi/README.rst"
+homepage = "https://github.com/dtomlinson91/musicbrainzapi-cv-airelogic"
+repository = "https://github.com/dtomlinson91/musicbrainzapi-cv-airelogic"
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -14,6 +18,7 @@ numpy = "^1.18.1"
 beautifultable = "^0.8.0"
 wordcloud = "^1.6.0"
 multidict = "^4.7.5"
+click = "^7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -27,6 +32,9 @@ autopep8 = "^1.5"
 YAPF = "^0.29.0"
 pudb = "^2019.2"
 pyls-black = "^0.4.4"
+sphinx = "^2.4.4"
+sphinx_rtd_theme = "^0.4.3"
+sphinx-click = "^2.3.1"
 
 [tool.poetry.plugins."console_scripts"]
 "musicbrainzapi" = "musicbrainzapi.cli.cli:cli"

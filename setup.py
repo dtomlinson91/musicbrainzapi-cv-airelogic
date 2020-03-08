@@ -19,6 +19,10 @@ package_data = \
 install_requires = \
 ['addict>=2.2.1,<3.0.0',
  'beautifultable>=0.8.0,<0.9.0',
+<<<<<<< HEAD
+=======
+ 'click>=7.0,<8.0',
+>>>>>>> develop
  'multidict>=4.7.5,<5.0.0',
  'musicbrainzngs>=0.7.1,<0.8.0',
  'numpy>=1.18.1,<2.0.0',
@@ -32,13 +36,22 @@ entry_points = \
 setup_kwargs = {
     'name': 'musicbrainzapi',
     'version': '1.0.0',
+<<<<<<< HEAD
     'description': '',
     'long_description': None,
+=======
+    'description': 'Python module to calculate statistics and generate a wordcloud for a given artist. Uses the Musicbrainz API and the lyrics.ovh API.',
+    'long_description': '',
+>>>>>>> develop
     'author': 'dtomlinson',
     'author_email': 'dtomlinson@panaetius.co.uk',
     'maintainer': None,
     'maintainer_email': None,
+<<<<<<< HEAD
     'url': None,
+=======
+    'url': 'https://github.com/dtomlinson91/musicbrainzapi-cv-airelogic',
+>>>>>>> develop
     'package_dir': package_dir,
     'packages': packages,
     'package_data': package_data,

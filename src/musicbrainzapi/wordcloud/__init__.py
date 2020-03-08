@@ -70,12 +70,20 @@ class LyricsWordcloud:
 
         return cls(mic_img, all_albums_lyrics_count)
 
+    @staticmethod
+    def generate_grey_colours(
+        # word: str,
+        # font_size: str,
+        # random_state: typing.Union[None, bool] = None,
+        *args,
+        **kwargs,
+    ) -> str:
+        """Static method to generate a random grey colour"""
+        colour = f'hsl(0, 0%, {random.randint(60, 100)}%)'
+        return colour
+
     def _get_lyrics_list(self) -> None:
         """Gets all words from lyrics in a single list + cleans them.
-        
-        Returns
-        -------
-        None
         """
         self.lyrics_list = list()
         for i in self.all_albums_lyrics_count:
@@ -109,23 +117,8 @@ class LyricsWordcloud:
         """
         self.char_mask = np.array(self.pillow_img)
 
-    @staticmethod
-    def generate_grey_colours(
-        word: str,
-        font_size: str,
-        random_state: typing.Union[None, bool] = None,
-        *args,
-        **kwargs,
-    ) -> str:
-        colour = f'hsl(0, 0%, {random.randint(60, 100)}%)'
-        return colour
-
     def _generate_word_cloud(self) -> None:
         """Generates a word cloud
-        
-        Returns
-        -------
-        None
         """
         self.wc = WordCloud(
             max_words=150,
@@ -138,10 +131,6 @@ class LyricsWordcloud:
 
     def _generate_plot(self) -> None:
         """Plots the wordcloud and sets matplotlib options.
-        
-        Returns
-        -------
-        None
         """
         plt.imshow(
             self.wc.recolor(
@@ -159,10 +148,6 @@ class LyricsWordcloud:
 
     def create_word_cloud(self) -> None:
         """Creates a word cloud
-        
-        Returns
-        -------
-        None
         """
         self._get_lyrics_list()
         self._get_frequencies()

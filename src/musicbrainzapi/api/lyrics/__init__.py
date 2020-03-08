@@ -37,10 +37,6 @@ class Lyrics:
 
     def show_summary(self) -> None:
         """Show the average word count for all lyrics
-
-        Returns
-        -------
-        None
         """
         all_averages = []
 
@@ -77,10 +73,6 @@ class Lyrics:
         ----------
         group_by : str
             Parameter to group statistics by. Valid options are album or year
-
-        Returns
-        -------
-        None
         """
         stats_obj = getattr(self, f'{group_by}_statistics')
         stats = [

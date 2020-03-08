@@ -1,0 +1,87 @@
+@import url("css/theme.css");
+
+.modname {
+    font-size: 0.8em;
+    opacity: 0.4;
+}
+.modname::before {
+    content: '- ';
+}
+.title {
+    font-weight: bold;
+    font-size: 1.2em;
+    background-color: #eee;
+    display: block;
+    padding: 1px 5px;
+    border-left: 2px solid #ddd;
+}
+
+/*colour of the text in the toc*/
+.wy-menu-vertical header, .wy-menu-vertical p.caption{
+    color: #b26d46;;
+}
+
+/*colour of the top left header*/
+.wy-side-nav-search{
+    background-color: #31465a;
+}
+
+/*colours of the class definitions*/
+.rst-content dl:not(.docutils) dt{
+    background: #e2d7d1;
+    color: #0b2852;
+    border-top: solid 3px #31465a;
+}
+
+/*colour of the link in the class defintions*/
+.rst-content .viewcode-link, .rst-content .viewcode-back{
+    color: #4b674a;
+}
+
+/*colour of the function definitions*/
+.rst-content dl:not(.docutils) dl dt{
+    border-left: solid 3px #31465a;
+    background: #e2d7d1;
+    color: #0b2852;
+}
+
+/*colour of the link in the function definitions*/
+.rst-content .viewcode-link, .rst-content .viewcode-back{
+    color: #4b674a;
+}
+
+/*edit the width of the body*/
+.wy-nav-content{
+    max-width: 1200px;
+}
+
+/*code example blocks*/
+.rst-content pre.literal-block, .rst-content div[class^="highlight"] pre, .rst-content .linenodiv pre{
+    background: #b4bec8;
+    color: black;
+    /*border-style: solid;*/
+    /*border-width: thin;*/
+}
+
+/*colour of inline code blocks using ``*/
+.rst-content tt.literal, .rst-content tt.literal, .rst-content code.literal{
+    color: #b26d46;
+}
+
+/* Change code blocks font and bump up font size slightly (normally 12px)*/
+.rst-content pre.literal-block, .rst-content div[class^="highlight"] pre, .rst-content .linenodiv pre {
+    font-family: 'Inconsolata', monospace !important;
+    font-size: 14px !important;
+    white-space: pre-wrap;
+}
+
+/* Change code descriptions and literal blocks (inline code via ``) to match the normal font size being used in the sphinx_RTD_theme text  (normally 14px)*/
+.rst-content dl:not(.docutils) tt.descname,.rst-content dl:not(.docutils) tt.descclassname,.rst-content dl:not(.docutils) tt.descname,.rst-content dl:not(.docutils) code.descname,.rst-content dl:not(.docutils) tt.descclassname,.rst-content dl:not(.docutils) code.descclassname, code.docutils {
+    font-family: 'Inconsolata', monospace !important;
+    font-size: 14px !important;
+}
+
+/*variables text*/
+dl.class > dd > table.docutils.field-list tbody tr.field-odd.field th.field-name::before{
+    content: '(Class Attributes) ';
+}
