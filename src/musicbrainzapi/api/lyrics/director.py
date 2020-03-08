@@ -9,8 +9,7 @@ from musicbrainzapi.api.lyrics import Lyrics
 
 
 class LyricsClickDirector:
-    """Director for Lyrics builder.
-    """
+    """Director for Lyrics builder."""
 
     def __init__(self) -> None:
         self._builder = None

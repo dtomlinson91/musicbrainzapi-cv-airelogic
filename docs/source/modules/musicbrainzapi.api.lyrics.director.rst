@@ -1,5 +1,5 @@
 musicbrainzapi.api.lyrics.director
-----------------------------------------------------------------------------------
+-------------------------------------
 
 .. automodule:: musicbrainzapi.api.lyrics.director
    :members:
