@@ -1,14 +1,29 @@
-musicbrainzapi.api.lyrics
---------------------------------------------------------------------------
+musicbrainzapi.api.lyrics package
+=================================
 
-.. automodule:: musicbrainzapi.api.lyrics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
+.. autmodule:: musicbrainzapi.api.lyrics
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:
 
-.. toctree::
+Submodules
+==========
 
-   musicbrainzapi.api.lyrics.builder
-   musicbrainzapi.api.lyrics.concrete_builder
-   musicbrainzapi.api.lyrics.director
+.. automodule:: musicbrainzapi.api.lyrics.builder
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:
+
+.. automodule:: musicbrainzapi.api.lyrics.concrete_builder
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:
+
+.. automodule:: musicbrainzapi.api.lyrics.director
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:

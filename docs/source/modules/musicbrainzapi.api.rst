@@ -11,7 +11,7 @@ Subpackages
 ===========
 
 .. toctree::
-    musicbrainzapi.lyrics
+    musicbrainzapi.api.lyrics
 
 Submodules
 ==========
