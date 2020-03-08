@@ -18,6 +18,7 @@ numpy = "^1.18.1"
 beautifultable = "^0.8.0"
 wordcloud = "^1.6.0"
 multidict = "^4.7.5"
+click = "^7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

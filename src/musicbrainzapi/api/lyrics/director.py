@@ -114,13 +114,13 @@ class LyricsClickDirector:
             self.builder.all_albums_lyrics
         )
         self.builder.count_words_in_lyrics()
-        with open(f'{os.getcwd()}/lyrics_count.json', 'w+') as file:
-            json.dump(
-                self.builder.all_albums_lyrics_count,
-                file,
-                indent=2,
-                sort_keys=True,
-            )
+        # with open(f'{os.getcwd()}/lyrics_count.json', 'w+') as file:
+        #     json.dump(
+        #         self.builder.all_albums_lyrics_count,
+        #         file,
+        #         indent=2,
+        #         sort_keys=True,
+        #     )
         self.builder._product.all_albums_lyrics_count = (
             self.builder.all_albums_lyrics_count
         )

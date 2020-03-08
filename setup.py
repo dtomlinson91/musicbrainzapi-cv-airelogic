@@ -19,6 +19,7 @@ package_data = \
 install_requires = \
 ['addict>=2.2.1,<3.0.0',
  'beautifultable>=0.8.0,<0.9.0',
+ 'click>=7.0,<8.0',
  'multidict>=4.7.5,<5.0.0',
  'musicbrainzngs>=0.7.1,<0.8.0',
  'numpy>=1.18.1,<2.0.0',

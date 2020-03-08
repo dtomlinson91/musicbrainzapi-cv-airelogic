@@ -3,7 +3,6 @@ from collections import Counter
 import html
 import json
 import math
-import os
 import string
 from typing import Union, Dict
 
@@ -88,7 +87,109 @@ class LyricsBuilder(LyricsConcreteBuilder):
 
     @staticmethod
     def set_useragent() -> None:
+        """Sets the useragent for the Musicbrainz api.
+        """
         authenticate.set_useragent()
+
+    @staticmethod
+    def construct_lyrics_url(artist: str, song: str) -> str:
+        """Builds the URL for the lyrics api.
+
+        Parameters
+        ----------
+        artist : str
+            Artist
+        song : str
+            Track title
+
+        Returns
+        -------
+        str
+            URL for lyrics from the lyrics api.
+        """
+        lyrics_api_base = 'https://api.lyrics.ovh/v1'
+        lyrics_api_url = html.escape(f'{lyrics_api_base}/{artist}/{song}')
+        return lyrics_api_url
+
+    @staticmethod
+    def request_lyrics_from_url(url: str) -> str:
+        """Gets lyrics from the lyrics api.
+
+        Parameters
+        ----------
+        url : str
+            URL of the track for the lyrics api.
+
+        Returns
+        -------
+        str
+            Lyrics of the trakc
+        """
+        resp = requests.get(url)
+
+        # No lyrics for a song will return a key of 'error', we pass on this.
+        try:
+            lyrics = LyricsBuilder.strip_punctuation(resp.json()['lyrics'])
+            return lyrics
+        except (KeyError, json.decoder.JSONDecodeError):
+            return
+
+    @staticmethod
+    def strip_punctuation(word: str) -> str:
+        """Removes punctuation from lyrics.
+
+        Parameters
+        ----------
+        word : str
+            Word to remove punctuation from.
+
+        Returns
+        -------
+        str
+            Same word without any punctuation.
+        """
+        _strip = word.translate(str.maketrans('', '', string.punctuation))
+        return _strip
+
+    @staticmethod
+    def get_descriptive_statistics(nums: list) -> Dict[str, int]:
+        """Calculates descriptive statistics.
+
+        Parameters
+        ----------
+        nums : list
+            A list containing total number of words from a track.
+
+        Returns
+        -------
+        Dict[str, int]
+            Dictionary of statistic and value.
+        """
+        if len(nums) == 0:
+            return
+        avg = math.ceil(np.mean(nums))
+        median = math.ceil(np.median(nums))
+        std = math.ceil(np.std(nums))
+        max = math.ceil(np.max(nums))
+        min = math.ceil(np.min(nums))
+        p_10 = math.ceil(np.percentile(nums, 10))
+        p_25 = math.ceil(np.percentile(nums, 25))
+        p_75 = math.ceil(np.percentile(nums, 75))
+        p_90 = math.ceil(np.percentile(nums, 90))
+        count = len(nums)
+        _d = addict.Dict(
+            ('avg', avg),
+            ('median', median),
+            ('std', std),
+            ('max', max),
+            ('min', min),
+            ('p_10', p_10),
+            ('p_25', p_25),
+            ('p_75', p_75),
+            ('p_90', p_90),
+            ('count', count),
+        )
+        return _d
 
     def __init__(self) -> None:
         self.reset()
@@ -303,9 +404,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
                     )
                     self.all_albums_lyrics.append(lyrics)
                     bar.update(update)
-
-        with open(f'{os.getcwd()}/all_albums_lyrics.json', 'w') as f:
-            json.dump(self.all_albums_lyrics, f, indent=2)
         return self
 
     def count_words_in_lyrics(self) -> None:
@@ -420,104 +518,3 @@ class LyricsBuilder(LyricsConcreteBuilder):
             self.year_statistics = addict.Dict(
                 **self.year_statistics, **addict.Dict((year, _d))
             )
-        # pprint(self.year_statistics)
-
-    @staticmethod
-    def construct_lyrics_url(artist: str, song: str) -> str:
-        """Builds the URL for the lyrics api.
-
-        Parameters
-        ----------
-        artist : str
-            Artist
-        song : str
-            Track title
-
-        Returns
-        -------
-        str
-            URL for lyrics from the lyrics api.
-        """
-        lyrics_api_base = 'https://api.lyrics.ovh/v1'
-        lyrics_api_url = html.escape(f'{lyrics_api_base}/{artist}/{song}')
-        return lyrics_api_url
-
-    @staticmethod
-    def request_lyrics_from_url(url: str) -> str:
-        """Gets lyrics from the lyrics api.
-
-        Parameters
-        ----------
-        url : str
-            URL of the track for the lyrics api.
-
-        Returns
-        -------
-        str
-            Lyrics of the trakc
-        """
-        resp = requests.get(url)
-
-        # No lyrics for a song will return a key of 'error', we pass on this.
-        try:
-            lyrics = LyricsBuilder.strip_punctuation(resp.json()['lyrics'])
-            return lyrics
-        except (KeyError, json.decoder.JSONDecodeError):
-            return
-
-    @staticmethod
-    def strip_punctuation(word: str) -> str:
-        """Removes punctuation from lyrics.
-
-        Parameters
-        ----------
-        word : str
-            Word to remove punctuation from.
-
-        Returns
-        -------
-        str
-            Same word without any punctuation.
-        """
-        _strip = word.translate(str.maketrans('', '', string.punctuation))
-        return _strip
-
-    @staticmethod
-    def get_descriptive_statistics(nums: list) -> Dict[str, int]:
-        """Calculates descriptive statistics.
-
-        Parameters
-        ----------
-        nums : list
-            A list containing total number of words from a track.
-
-        Returns
-        -------
-        Dict[str, int]
-            Dictionary of statistic and value.
-        """
-        if len(nums) == 0:
-            return
-        avg = math.ceil(np.mean(nums))
-        median = math.ceil(np.median(nums))
-        std = math.ceil(np.std(nums))
-        max = math.ceil(np.max(nums))
-        min = math.ceil(np.min(nums))
-        p_10 = math.ceil(np.percentile(nums, 10))
-        p_25 = math.ceil(np.percentile(nums, 25))
-        p_75 = math.ceil(np.percentile(nums, 75))
-        p_90 = math.ceil(np.percentile(nums, 90))
-        count = len(nums)
-        _d = addict.Dict(
-            ('avg', avg),
-            ('median', median),
-            ('std', std),
-            ('max', max),
-            ('min', min),
-            ('p_10', p_10),
-            ('p_25', p_25),
-            ('p_75', p_75),
-            ('p_90', p_90),
-            ('count', count),
-        )
-        return _d
