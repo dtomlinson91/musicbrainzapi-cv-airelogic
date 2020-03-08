@@ -78,8 +78,7 @@ def lyrics(
     director._query_for_data()
     director._get_lyrics()
     director._calculate_basic_statistics()
-    if show_summary is not None:
-        director._calculate_descriptive_statistics()
+    director._calculate_descriptive_statistics()
 
     # Get the Lyrics object
     lyrics_0 = director.builder.product

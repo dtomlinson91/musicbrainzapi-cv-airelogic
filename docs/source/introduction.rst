@@ -1,1 +1,1 @@
-.. include:: ../../toc.rst
+.. include:: ../../README.rst
