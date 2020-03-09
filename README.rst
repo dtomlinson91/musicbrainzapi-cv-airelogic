@@ -89,7 +89,7 @@ In the root of the repo in a virtual environment run:
 
 .. code-block:: bash
 
-    poetry install
+    poetry install --no-dev
 
 Docker
 ------
