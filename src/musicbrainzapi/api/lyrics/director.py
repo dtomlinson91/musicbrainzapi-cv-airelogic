@@ -9,11 +9,26 @@ from musicbrainzapi.api.lyrics import Lyrics
 
 
 class LyricsClickDirector:
-    """Director for Lyrics builder.
-    """
+    """Director for Lyrics builder."""
 
     def __init__(self) -> None:
         self._builder = None
+
+    @staticmethod
+    def _get_product(builder_inst: LyricsBuilder) -> Lyrics:
+        """Returns the constructed Lyrics object
+
+        Parameters
+        ----------
+        builder_inst : LyricsBuilder
+            Builder class for Lyrics object
+
+        Returns
+        -------
+        Lyrics
+            Lyrics object
+        """
+        return builder_inst._product
 
     @property
     def builder(self) -> LyricsBuilder:
@@ -156,19 +171,3 @@ class LyricsClickDirector:
         self.builder._product.show_summary()
         self.builder._product.show_summary_statistics(group_by='year')
         return self
-
-    @staticmethod
-    def _get_product(builder_inst: LyricsBuilder) -> Lyrics:
-        """Returns the constructed Lyrics object
-
-        Parameters
-        ----------
-        builder_inst : LyricsBuilder
-            Builder class for Lyrics object
-
-        Returns
-        -------
-        Lyrics
-            Lyrics object
-        """
-        return builder_inst._product

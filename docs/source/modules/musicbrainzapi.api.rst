@@ -1,19 +1,28 @@
-.. include:: ../global.rst
-
-musicbrainzapi.api :modname:`musicbrainzapi.api`
---------------------------------------------------------------------------
+musicbrainzapi.api package
+===========================
 
 .. automodule:: musicbrainzapi.api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:
 
-
-.. toctree::
-
-   musicbrainzapi.api.lyrics
+Subpackages
+-----------
 
 .. toctree::
+    :maxdepth: 1
 
-   musicbrainzapi.api.authenticate
+    musicbrainzapi.api.lyrics
+
+Submodules
+----------
+
+musicbrainzapi.api.authenticate module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: musicbrainzapi.api.authenticate
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:

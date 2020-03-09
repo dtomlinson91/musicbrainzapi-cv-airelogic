@@ -24,7 +24,7 @@ from musicbrainzapi.api.lyrics.director import LyricsClickDirector
 @click.option(
     '--wordcloud',
     required=False,
-    help='Generate a wordcloud from lyrics.',
+    help='Generates a wordcloud from lyrics.',
     is_flag=True,
     default=False,
 )
@@ -41,7 +41,7 @@ from musicbrainzapi.api.lyrics.director import LyricsClickDirector
     required=False,
     multiple=False,
     type=str,
-    help='ISO A-2 Country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha'
+    help='Filter artist by country. This is optional but can narrow down a search if many artists share the same or similar names. Country must be a ISO A-2 Country code (https://en.wikipedia.org/wiki/ISO_3166-1_alpha'
     '-2) Example: GB',
 )
 @click.option(
@@ -63,7 +63,7 @@ def lyrics(
     wordcloud: bool,
     save_output: bool,
 ) -> None:
-    """Search for lyrics statistics of an Artist/Group.
+    """Search for lyrics statistics of an Artist/Group. Optionally save the results to disk, and show a wordcloud. Descriptive statistics can be shown in addition to the final average.
     """
     director = LyricsClickDirector()
     builder = LyricsBuilder()
