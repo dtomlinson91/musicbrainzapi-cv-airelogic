@@ -170,8 +170,8 @@ class LyricsBuilder(LyricsConcreteBuilder):
         avg = math.ceil(np.mean(nums))
         median = math.ceil(np.median(nums))
         std = math.ceil(np.std(nums))
-        max = math.ceil(np.max(nums))
-        min = math.ceil(np.min(nums))
+        _max = math.ceil(np.max(nums))
+        _min = math.ceil(np.min(nums))
         p_10 = math.ceil(np.percentile(nums, 10))
         p_25 = math.ceil(np.percentile(nums, 25))
         p_75 = math.ceil(np.percentile(nums, 75))
@@ -181,8 +181,8 @@ class LyricsBuilder(LyricsConcreteBuilder):
             ('avg', avg),
             ('median', median),
             ('std', std),
-            ('max', max),
-            ('min', min),
+            ('max', _max),
+            ('min', _min),
             ('p_10', p_10),
             ('p_25', p_25),
             ('p_75', p_75),
@@ -312,10 +312,10 @@ class LyricsBuilder(LyricsConcreteBuilder):
                 f'{self.artist}'
             ),
         ) as bar:
-            for id, alb in self.release_group_ids.items():
+            for _id, alb in self.release_group_ids.items():
                 resp_0 = addict.Dict(
                     musicbrainzngs.browse_releases(
-                        release_group=id,
+                        release_group=_id,
                         release_type=['album'],
                         includes=['recordings'],
                         limit=100,

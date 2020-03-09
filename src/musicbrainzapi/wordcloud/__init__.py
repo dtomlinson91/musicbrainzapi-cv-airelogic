@@ -56,7 +56,7 @@ class LyricsWordcloud:
         cls, all_albums_lyrics_count: 'Lyrics.all_albums_lyrics_count',
     ) -> LyricsWordcloud:
         """Class method to instantiate with a microphone base image.
-        
+
         Parameters
         ----------
         all_albums_lyrics_count : Lyrics.all_albums_lyrics_count
@@ -87,7 +87,7 @@ class LyricsWordcloud:
         """
         self.lyrics_list = list()
         for i in self.all_albums_lyrics_count:
-            for album, lyric in i.items():
+            for _, lyric in i.items():
                 for track in lyric:
                     try:
                         for word in track:
@@ -141,10 +141,10 @@ class LyricsWordcloud:
         plt.axis('off')
         return self
 
-    def show_word_cloud(self):
-        """Shows the word cloud.
-        """
-        plt.show()
+    # def show_word_cloud(self):
+        # """Shows the word cloud.
+        # """
+        # plt.show()
 
     def create_word_cloud(self) -> None:
         """Creates a word cloud
