@@ -30,9 +30,9 @@ class ComplexCLI(click.MultiCommand):
         rv.sort()
         return rv
 
-    def get_command(self, ctx, name):
-        mod = import_module(f'musicbrainzapi.cli.commands.cmd_{name}')
-        return getattr(mod, name)
+    def get_command(self, ctx, cmd_name):
+        mod = import_module(f'musicbrainzapi.cli.commands.cmd_{cmd_name}')
+        return getattr(mod, cmd_name)
 
 
 @click.command(cls=ComplexCLI, context_settings=CONTEXT_SETTINGS)
