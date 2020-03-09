@@ -1,3 +1,7 @@
+"""
+Wordcloud from lyrics.
+"""
+
 from __future__ import annotations
 import collections
 from importlib import resources
@@ -18,7 +22,7 @@ if typing.TYPE_CHECKING:
 
 class LyricsWordcloud:
     """Create a word cloud from Lyrics.
-    
+
     Attributes
     ----------
     all_albums_lyrics_count : list
@@ -41,6 +45,8 @@ class LyricsWordcloud:
         all_albums_lyrics_count: 'Lyrics.all_albums_lyrics_count',
     ):
         """
+        Create a worcloud object.
+
         Parameters
         ----------
         pillow_img : PIL.PngImagePlugin.PngImageFile
@@ -55,12 +61,14 @@ class LyricsWordcloud:
     def use_microphone(
         cls, all_albums_lyrics_count: 'Lyrics.all_albums_lyrics_count',
     ) -> LyricsWordcloud:
-        """Class method to instantiate with a microphone base image.
+        """
+        Class method to instantiate with a microphone base image.
 
         Parameters
         ----------
         all_albums_lyrics_count : Lyrics.all_albums_lyrics_count
             List of all albums + track lyrics counted by each word
+
         """
         mic_resource = resources.path(
             'musicbrainzapi.wordcloud.resources', 'mic.png'
@@ -78,7 +86,7 @@ class LyricsWordcloud:
         *args,
         **kwargs,
     ) -> str:
-        """Static method to generate a random grey colour"""
+        """Static method to generate a random grey colour."""
         colour = f'hsl(0, 0%, {random.randint(60, 100)}%)'
         return colour
 

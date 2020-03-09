@@ -10,6 +10,7 @@ class LyricsClickDirector:
     """Director for Lyrics builder."""
 
     def __init__(self) -> None:
+        """Create a Director to orchestrate the builder."""
         self._builder = None
 
     @staticmethod
@@ -62,6 +63,7 @@ class LyricsClickDirector:
         ------
         SystemExit
             If no artist is found will cleanly quit.
+
         """
         artist_meta = None
         for i, j in self.builder._top_five_results.items():
@@ -111,8 +113,7 @@ class LyricsClickDirector:
         return self
 
     def _query_for_data(self) -> None:
-        """Query Musicbrainz api for albums + track data.
-        """
+        """Query Musicbrainz api for albums + track data."""
         self.builder.find_all_albums()
         self.builder.find_all_tracks()
         self.builder._product.all_albums_with_tracks = self.builder.all_albums
