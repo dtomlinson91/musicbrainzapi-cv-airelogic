@@ -70,6 +70,27 @@ In the root of the repo in a virtual environment run:
 
     python ./setup.py install
 
+poetry
+------
+
+Clone the repo:
+
+.. code-block:: bash
+
+    git clone https://github.com/dtomlinson91/musicbrainzapi-cv-airelogic.git
+
+In a virtual environment install poetry:
+
+.. code-block:: bash
+
+    pip install poetry
+
+In the root of the repo in a virtual environment run:
+
+.. code-block:: bash
+
+    poetry install
+
 Docker
 ------
 
