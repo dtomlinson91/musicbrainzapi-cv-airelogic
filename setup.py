@@ -41,7 +41,6 @@ setup_kwargs = {
     'author_email': 'dtomlinson@panaetius.co.uk',
     'maintainer': None,
     'maintainer_email': None,
-    'url': None,
     'url': 'https://github.com/dtomlinson91/musicbrainzapi-cv-airelogic',
     'package_dir': package_dir,
     'packages': packages,
