@@ -106,6 +106,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         -------
         str
             URL for lyrics from the lyrics api.
+
         """
         lyrics_api_base = 'https://api.lyrics.ovh/v1'
         lyrics_api_url = html.escape(f'{lyrics_api_base}/{artist}/{song}')
@@ -123,7 +124,8 @@ class LyricsBuilder(LyricsConcreteBuilder):
         Returns
         -------
         str
-            Lyrics of the trakc
+            Lyrics of the track.
+
         """
         resp = requests.get(url)
 
@@ -192,6 +194,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         return _d
 
     def __init__(self) -> None:
+        """Create a builder instance to build a Lyrics object."""
         self.reset()
 
     def reset(self) -> None:
@@ -208,8 +211,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         return self
 
     def sort_artists(self) -> None:
-        """Sort the artists from the Musicbrainzapi
-        """
+        """Sort the artists from the Musicbrainzapi."""
         self._sort_names = dict(
             (i.get('id'), f'{i.get("name")} | {i.get("disambiguation")}')
             if i.get('disambiguation') is not None
@@ -241,8 +243,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         return self
 
     def find_all_albums(self) -> None:
-        """Find all albums for the chosen artist
-        """
+        """Find all albums for the chosen artist."""
         limit, offset, page = (100, 0, 1)
 
         resp_0 = addict.Dict(
@@ -365,8 +366,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         return self
 
     def find_lyrics_urls(self) -> None:
-        """Construct the URL for the lyrics api.
-        """
+        """Construct the URL for the lyrics api."""
         self.all_albums_lyrics_url = list()
         for x in self.all_albums:
             for alb, tracks in x.items():

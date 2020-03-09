@@ -33,10 +33,8 @@ entry_points = \
 setup_kwargs = {
     'name': 'musicbrainzapi',
     'version': '1.0.0',
-    'description': '',
     'long_description': None,
     'description': 'Python module to calculate statistics and generate a wordcloud for a given artist. Uses the Musicbrainz API and the lyrics.ovh API.',
-    'long_description': '',
     'author': 'dtomlinson',
     'author_email': 'dtomlinson@panaetius.co.uk',
     'maintainer': None,
