@@ -10,11 +10,14 @@ Introduction
 .. image:: https://img.shields.io/github/languages/code-size/dtomlinson91/musicbrainzapi-cv-airelogic?style=for-the-badge
 .. image:: https://img.shields.io/github/languages/top/dtomlinson91/musicbrainzapi-cv-airelogic?style=for-the-badge
 .. image:: https://img.shields.io/requires/github/dtomlinson91/musicbrainzapi-cv-airelogic?style=for-the-badge
+.. image:: https://img.shields.io/codacy/grade/f9517450400d48b0a7222a383c2e8fe2?style=for-the-badge
 
 Summary
 ========
 
 Musicbrainzapi is a Python module with a CLI that allows you to search for an artist and receive summary statistics on lyrics across all albums + tracks. 
+
+The module can also generate and display a wordcloud from the lyrics.
 
 In addition to basic statistics the module further allows you to save details of an artist. You can save album information, the lyrics themselves and track lists.
 
