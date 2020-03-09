@@ -11,7 +11,6 @@ Table of Contents
    changelog
 
 .. toctree::
-   :maxdepth: 2
    :caption: API
 
    modules/modules
