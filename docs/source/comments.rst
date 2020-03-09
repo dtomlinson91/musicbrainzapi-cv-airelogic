@@ -53,7 +53,7 @@ Code restructure
 
 The :class:`musicbrainzapi.api.lyrics.concrete_builder.LyricsConcreteBuilder` class could be improved. Many of the methods defined in here no longer need to be present. Some of the functionality (url checking for example) could be removed and implemented in other ways (a Mixin is one solution).
 
-If other ways of filtering were to be added (as opposed to the current default of just Albums) this class would be useful in constructing our :class:`musicbrainzapi.api.lyrics.Lyrics` objects consistently.
+If other ways of filtering were to be added (as opposed to the current default of just Albums) then this class would be useful to build our :class:`musicbrainzapi.api.lyrics.Lyrics` objects consistently.
 
 Additional functionality to the lyrics command
 -----------------------------------------------
@@ -68,7 +68,7 @@ The ability for the user to specify something other than album or year to group 
 Multiple artists
 ^^^^^^^^^^^^^^^^
 
-Searching for multiple artists and comparing is certainly possible in the current iteration (click provides a nice way to accept multiple artists and then we create our ``Lyrics`` objects from these) this wasn't implemented. There are rate limiting factors which may slow down the program and increase runtime considerably.
+Searching for multiple artists and comparing is certainly possible in the current iteration (click provides a nice way to accept multiple artists and then we create our ``Lyrics`` objects from these) this wasn't implemented. There are rate limiting factors which may slow down the program and in the current implementation it could increase runtime considerably.
   
 Speed improvements
 -------------------
@@ -79,7 +79,7 @@ One solution would be to implement threading - as we are waiting on HTTP request
 
 This wasn't implemented primarily because of time - but threading could be implemented on each call we make to the API.
 
-An alternative, and I beleive an interesting solution, would be to use AWS Lambda (serverless).
+An alternative, and I believe an interesting solution, would be to use AWS Lambda (serverless).
 
 There is a caveat to this solution and it is cost - threading is free but adds development time and increases complexity. AWS isn't free but allows you to scale the requests out.
 
@@ -97,5 +97,11 @@ If more control was needed one solution could be:
 - As soon as the lambdas have been dispatched, the script could either poll from a queue, or read the events queue of the DynamoDB to retrieve the results. Processing the lyrics could then begin.
 
 This requires the user to have an internet connection - which is a current requirement. Requests to the api could be made simultaneously - without adding the complexity that comes with threading. This would not solve any API rate limiting - we are required to provide an application user_agent to the api to identify the app.
+
+An interesting solution, and one I did consider, was to have the program run entirely in lambda, requiring no depdencies and just a simple front end that sends requests, and uses ``boto3`` to retrieve. The simplicity of this, and the fact that AWS provide an SDK for many languages, means the cient code could run in any language.
+
+An interface to AWS API Gateway would provide the entry point to the lambda.
+
+Writing it in this manner (with an api backend) would mean a webapp of the program could be possible, with the frontend served with something like ``Vuejs`` or ``React``.
 
 .. _Zappa: https://github.com/Miserlou/Zappa
