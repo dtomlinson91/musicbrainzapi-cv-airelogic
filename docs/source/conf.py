@@ -89,6 +89,7 @@ html_theme_options = {
     'collapse_navigation': True,
     'display_version': True,
     'prev_next_buttons_location': 'both',
+    'navigation_depth': -1,
     #'navigation_depth': 3,
 }
 

@@ -12,6 +12,7 @@ Subpackages
 -----------
 
 .. toctree::
+    :maxdepth: 1
 
     musicbrainzapi.api
     musicbrainzapi.wordcloud

@@ -12,6 +12,7 @@ Table of Contents
 
 .. toctree::
    :caption: API
+   :maxdepth: 2
 
    modules/modules
 
@@ -19,3 +20,10 @@ Table of Contents
    :caption: Table of Contents
 
    self
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

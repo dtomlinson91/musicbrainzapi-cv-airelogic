@@ -1,7 +1,7 @@
 musicbrainzapi.api.lyrics package
 =================================
 
-.. autmodule:: musicbrainzapi.api.lyrics
+.. automodule:: musicbrainzapi.api.lyrics
     :members:
     :undoc-members:
     :show-inheritance:
