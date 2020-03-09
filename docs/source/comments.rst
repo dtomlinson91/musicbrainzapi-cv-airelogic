@@ -115,3 +115,12 @@ Although inelegant, and not guaranteed to capture the specific behaviour we want
 
 Musicbrainz provides a schema for their api. If this were to be placed in a production environment then readdressing this should be a priority - we should be checking the values returned, using the schema as a guide, and replacing missing values accordingly. We should not rely on ``try except`` blocks to do this as it can be unreliable and is prone to raise other errors.
 
+Further statistical analysis
+----------------------------
+
+Standard descriptive statistics are provided. I did consider including a more deeper analysis but opted not to for several reasons:
+
+- Without a specific problem or question to answer - explorative work can take a lot of time and may not yield satisfactory results. Questions I did consider are:
+
+    + `For active artists, based on their previous lyrics count what is the predicition of their next album?` Although a sensible question I'm not sure how useful the predicition would be - I am sure for some artists they would follow a pattern over time, but I'm not convinced all artists would and I imagine the results would be mixed. 
+    + `Anomaly detection - for artists with large releases, what albums stood out as larger than usual and what feature (or track) caused this anomaly?` - This would be a good question to answer and we have many tools available. As we have numeric data - clustering could be a candidate (DBSCAN or even K-MEANS). I opted not to because of time and the fact it would bloat the requirements up. Feature flags are an option when handling extra packages, ``pip install musicbrainzapi[analysis]`` for example, but nonetheless this would be an interesting question to answer and I beleive one of the easier ones to implement if it was desired.
