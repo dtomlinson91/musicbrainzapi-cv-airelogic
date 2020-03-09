@@ -105,3 +105,13 @@ An interface to AWS API Gateway would provide the entry point to the lambda.
 Writing it in this manner (with an api backend) would mean a webapp of the program could be possible, with the frontend served with something like ``Vuejs`` or ``React``.
 
 .. _Zappa: https://github.com/Miserlou/Zappa
+
+Error catching
+--------------
+
+Handling missing data from both APIs is done with error catching (namely ``ValueError`` and ``TypeError``).
+
+Although inelegant, and not guaranteed to capture the specific behaviour we want to catch (missing data etc.) it is a solution and appears to work quite well.
+
+Musicbrainz provides a schema for their api. If this were to be placed in a production environment then readdressing this should be a priority - we should be checking the values returned, using the schema as a guide, and replacing missing values accordingly. We should not rely on ``try except`` blocks to do this as it can be unreliable and is prone to raise other errors.
+
