@@ -1,16 +1,38 @@
-.. include:: ../global.rst
-
-musicbrainzapi.api.lyrics :modname:`musicbrainzapi.api.lyrics`
---------------------------------------------------------------------------
+musicbrainzapi.api.lyrics package
+=================================
 
 .. automodule:: musicbrainzapi.api.lyrics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:
 
-.. toctree::
+Submodules
+----------
 
-   musicbrainzapi.api.lyrics.builder
-   musicbrainzapi.api.lyrics.concrete_builder
-   musicbrainzapi.api.lyrics.director
+musicbrainzapi.api.lyrics.builder module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: musicbrainzapi.api.lyrics.builder
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:
+
+musicbrainzapi.api.lyrics.concrete_builder module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: musicbrainzapi.api.lyrics.concrete_builder
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:
+
+musicbrainzapi.api.lyrics.director module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: musicbrainzapi.api.lyrics.director
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:

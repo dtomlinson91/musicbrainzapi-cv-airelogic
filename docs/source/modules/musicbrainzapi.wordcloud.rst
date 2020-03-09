@@ -1,14 +1,9 @@
-.. include:: ../global.rst
-
-musicbrainzapi.wordcloud :modname:`musicbrainzapi.wordcloud`
---------------------------------------------------------------------------
+********************************
+musicbrainzapi.wordcloud package
+********************************
 
 .. automodule:: musicbrainzapi.wordcloud
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
-
-.. toctree::
-
-   musicbrainzapi.wordcloud.resources
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :private-members:

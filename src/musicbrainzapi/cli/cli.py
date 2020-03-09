@@ -42,7 +42,7 @@ class ComplexCLI(click.MultiCommand):
     type=click.Path(
         exists=True, file_okay=False, resolve_path=True, writable=True
     ),
-    help='Path to save results.',
+    help='Local path to save any output files.',
     default=os.getcwd()
 )
 # @click.option('-v', '--verbose', is_flag=True, help='Enables verbose mode.')
@@ -53,7 +53,7 @@ class ComplexCLI(click.MultiCommand):
 )
 @pass_environment
 def cli(ctx, path):
-    """A complex command line interface."""
+    """Base command for the musicbrainzapi program."""
     # ctx.verbose = verbose
     if path is not None:
         click.echo(f'Path set to {os.path.expanduser(path)}')

@@ -39,6 +39,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx_click.ext',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autosectionlabel'
 ]
 
 # -- Napoleon Settings -----------------------------------------------------
@@ -60,7 +62,7 @@ autodoc_member_order = 'bysource'
 templates_path = ['_templates']
 
 # The master toctree document.
-master_doc = 'introduction'
+master_doc = 'index'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -82,11 +84,12 @@ html_theme = "sphinx_rtd_theme"
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
-# html_context = {'css_files': ['_static/custom.css']}
+html_context = {'css_files': ['_static/custom.css']}
 html_theme_options = {
     'collapse_navigation': True,
     'display_version': True,
     'prev_next_buttons_location': 'both',
+    'navigation_depth': -1,
     #'navigation_depth': 3,
 }
 

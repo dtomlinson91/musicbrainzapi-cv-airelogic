@@ -1,7 +1,5 @@
-.. include:: ../global.rst
-
-musicbrainzapi :modname:`musicbrainzapi`
------------------------------------------
+musicbrainzapi 
+===============
 
 .. automodule:: musicbrainzapi
    :members:
@@ -9,4 +7,13 @@ musicbrainzapi :modname:`musicbrainzapi`
    :show-inheritance:
    :private-members:
 
-Main module text
+
+Subpackages
+-----------
+
+.. toctree::
+    :maxdepth: 1
+
+    musicbrainzapi.api
+    musicbrainzapi.wordcloud
+
