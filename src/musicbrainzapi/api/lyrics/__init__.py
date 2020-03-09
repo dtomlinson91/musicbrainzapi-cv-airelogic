@@ -1,3 +1,7 @@
+"""
+Lyrics object with statistics.
+===============================
+"""
 from __future__ import annotations
 from typing import Union, Dict, List
 from dataclasses import dataclass
@@ -10,8 +14,7 @@ import numpy as np
 
 @dataclass
 class Lyrics:
-    """Lyrics object for an artist.
-    """
+    """Lyrics object for an artist."""
 
     artist_id: str
     artist: str
