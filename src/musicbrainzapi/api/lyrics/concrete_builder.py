@@ -2,8 +2,6 @@ from __future__ import annotations
 from abc import ABC, abstractstaticmethod, abstractmethod
 from typing import Union
 
-from musicbrainzapi.api import authenticate
-
 
 class LyricsConcreteBuilder(ABC):
     """Abstract concrete builder for Lyrics
@@ -45,8 +43,24 @@ class LyricsConcreteBuilder(ABC):
         pass
 
     @abstractstaticmethod
-    def set_useragent():
-        authenticate.set_useragent()
+    def set_useragent() -> None:
+        pass
+
+    @abstractstaticmethod
+    def construct_lyrics_url() -> None:
+        pass
+
+    @abstractstaticmethod
+    def request_lyrics_from_url() -> None:
+        pass
+
+    @abstractstaticmethod
+    def strip_punctuation() -> None:
+        pass
+
+    @abstractstaticmethod
+    def get_descriptive_statistics() -> None:
+        pass
 
     @abstractmethod
     def __init__(self) -> None:
@@ -78,4 +92,28 @@ class LyricsConcreteBuilder(ABC):
 
     @abstractmethod
     def find_all_tracks(self) -> None:
+        pass
+
+    @abstractmethod
+    def find_lyrics_urls(self) -> None:
+        pass
+
+    @abstractmethod
+    def find_all_lyrics(self) -> None:
+        pass
+
+    @abstractmethod
+    def count_words_in_lyrics(self) -> None:
+        pass
+
+    @abstractmethod
+    def calculate_track_totals(self) -> None:
+        pass
+
+    @abstractmethod
+    def calculate_final_average_by_album(self) -> None:
+        pass
+
+    @abstractmethod
+    def calculate_final_average_by_year(self) -> None:
         pass

@@ -17,6 +17,8 @@ Summary
 
 Musicbrainzapi is a Python module with a CLI that allows you to search for an artist and receive summary statistics on lyrics across all albums + tracks. 
 
+The module can also generate and display a wordcloud from the lyrics.
+
 In addition to basic statistics the module further allows you to save details of an artist. You can save album information, the lyrics themselves and track lists.
 
 The module (currently) provides a simple CLI with some underlying assumptions:

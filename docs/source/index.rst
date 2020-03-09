@@ -8,6 +8,7 @@ Table of Contents
 
    introduction
    CLI
+   comments
    changelog
 
 .. toctree::
