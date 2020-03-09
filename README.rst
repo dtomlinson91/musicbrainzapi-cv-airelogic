@@ -9,7 +9,7 @@ Introduction
 .. image:: https://img.shields.io/github/license/dtomlinson91/musicbrainzapi-cv-airelogic?style=for-the-badge
 .. image:: https://img.shields.io/github/languages/code-size/dtomlinson91/musicbrainzapi-cv-airelogic?style=for-the-badge
 .. image:: https://img.shields.io/github/languages/top/dtomlinson91/musicbrainzapi-cv-airelogic?style=for-the-badge
-.. image:: https://img.shields.io/requires/github/
+.. image:: https://img.shields.io/requires/github/dtomlinson91/musicbrainzapi-cv-airelogic?style=for-the-badge
 
 Summary
 ========
