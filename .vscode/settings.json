@@ -1,3 +1,8 @@
 {
-  "python.pythonPath": "/Users/dtomlinson/.virtualenvs/musicbrainzapi/bin/python"
+  "python.pythonPath": "/Users/dtomlinson/.virtualenvs/musicbrainzapi/bin/python",
+  "restructuredtext.confPath": "${workspaceFolder}/docs/source",
+  "restructuredtext.linter.executablePath": "/Users/dtomlinson/.virtualenvs/utility-doc8/bin/doc8",
+  "files.trimTrailingWhitespace": true,
+  "restructuredtext.languageServer.trace.server": "messages",
+  "editor.fontSize": 13,
 }

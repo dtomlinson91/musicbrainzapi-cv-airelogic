@@ -20,20 +20,13 @@ click = "^7.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-python-language-server = "^0.31.8"
-Rope = "^0.16.0"
-Pyflakes = "^2.1.1"
-McCabe = "^0.6.1"
-pycodestyle = "^2.5.0"
-pydocstyle = "^5.0.2"
-autopep8 = "^1.5"
-YAPF = "^0.29.0"
 pudb = "^2019.2"
-pyls-black = "^0.4.4"
 sphinx = "^2.4.4"
 sphinx_rtd_theme = "^0.4.3"
 sphinx-click = "^2.3.1"
-coverage = "^5.0.3"
+prospector = "^1.2.0"
+pylint = "^2.4.4"
+pydoc-markdown = {git = "https://github.com/NiklasRosenstein/pydoc-markdown.git", rev = "develop"}
 
 [tool.poetry.plugins."console_scripts"]
 "musicbrainzapi" = "musicbrainzapi.cli.cli:cli"
