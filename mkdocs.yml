@@ -1,0 +1,39 @@
+site_name: Musicbrainzapi
+
+nav:
+  - Welcome:
+      - Home: index.md
+      - About: about.md
+  - API:
+      - API: test.md
+  - Code:
+      - python.md
+      - testdoc.md
+
+# theme: material
+theme:
+  name: "material"
+  palette:
+    primary: "yellow"
+    accent: "red"
+  feature:
+    tabs: true
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocstrings
+
+repo_name: "dtomlinson91/musicbrainzapi"
+repo_url: "https://github.com/dtomlinson91/musicbrainzapi-cv-airelogic"
+
+extra:
+  social:
+    - type: "github"
+      link: "https://github.com/dtomlinson91/musicbrainzapi"
