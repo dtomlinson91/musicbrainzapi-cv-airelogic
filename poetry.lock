@@ -74,6 +74,17 @@ python-versions = "*"
 version = "0.8.0"
 
 [[package]]
+category = "dev"
+description = "make your debug printing more friendly"
+name = "beeprint"
+optional = false
+python-versions = "*"
+version = "2.4.10"
+
+[package.dependencies]
+urwid = "*"
+
+[[package]]
 category = "main"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
@@ -1066,7 +1077,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "44fd20a54848c7d35be309d10766f8c4a4f3fdee8d661a1ad5088085ca5aca5e"
+content-hash = "f2c161c810940af2e52283d3b1f2af77d6673bebe20a2af79cc44a14debb4bf1"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1097,6 +1108,9 @@ babel = [
 beautifultable = [
     {file = "beautifultable-0.8.0-py2.py3-none-any.whl", hash = "sha256:28e2e93d44a4e84511c4869da4b907345435a06728925e295790f24e1d57300c"},
     {file = "beautifultable-0.8.0.tar.gz", hash = "sha256:d44d9551bbed7bfa88675324f84efb9aa857384d44e9fb21eb530f0a0badb815"},
+]
+beeprint = [
+    {file = "beeprint-2.4.10.tar.gz", hash = "sha256:b3cbe170718e696bfa05e074789212ba6aef5f096a5fd12717f14d4f1615a440"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},

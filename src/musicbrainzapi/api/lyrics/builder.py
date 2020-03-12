@@ -1,53 +1,49 @@
 from __future__ import annotations
-from collections import Counter
+
 import html
 import json
 import math
 import string
-from typing import Union, Dict
+from collections import Counter
+from typing import Dict, Union
 
 import addict
 import click
 import musicbrainzngs
 import numpy as np
 import requests
+from beeprint import pp
 
-from musicbrainzapi.api.lyrics.concrete_builder import LyricsConcreteBuilder
-from musicbrainzapi.api.lyrics import Lyrics
 from musicbrainzapi.api import authenticate
+from musicbrainzapi.api.lyrics import Lyrics
+from musicbrainzapi.api.lyrics.concrete_builder import LyricsConcreteBuilder
 
 
 class LyricsBuilder(LyricsConcreteBuilder):
-    """docstring for LyricsBuilder
+    """
+    This interface will build a Lyrics object.
 
-    Attributes
-    ----------
-    album_statistics : addict.Dict
-        Dictionary containing album statistics
-    all_albums : list
-        List of all albums + track titles
-    all_albums_lyrics : list
-        List of all albums + track lyrics
-    all_albums_lyrics_count : list
-        List of all albums + track lyrics counted by each word
-    all_albums_lyrics_sum : list
-        List of all albums + track lyrics counted and summed up.
-    all_albums_lyrics_url : list
-        List of all albums + link to lyrics api for each track.
-    musicbrainz_artists : addict.Dict
-        Dictionary of response from Musicbrainzapi
-    release_group_ids : addict.Dict
-        Dictionary of Musicbrainz release-group ids
-    total_track_count : int
-        Total number of tracks across all albums
-    year_statistics : addict.Dict
-        Dictionary containing album statistics
+    !!! info "Attributes"
+        - musicbrainz_artists (addict.Dict): A dict response from the Musicbrainz api for all artists.
+        - release_group_ids (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+        - all_albums (list): : A dict response from the Musicbrainz api for all artists.
+        - total_track_count (list): : A dict response from the Musicbrainz api for all artists.
+        - all_albums_lyrics_url (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+        - all_albums_lyrics (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+        - all_albums_lyrics_count (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+        - all_albums_lyrics_sum (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+        - album_statistics (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+        - album_statistics (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+        - year_statistics (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+        - year_statistics (addict.Dict): : A dict response from the Musicbrainz api for all artists.
+
+    Example:
+        A test example.
     """
 
     @property
     def product(self) -> Lyrics:
-        product = self._product
-        return product
+        return self._product
 
     @property
     def artist(self) -> str:
@@ -167,7 +163,7 @@ class LyricsBuilder(LyricsConcreteBuilder):
         Dict[str, int]
             Dictionary of statistic and value.
         """
-        if len(nums) == 0:
+        if not nums:
             return
         avg = math.ceil(np.mean(nums))
         median = math.ceil(np.median(nums))
@@ -179,22 +175,22 @@ class LyricsBuilder(LyricsConcreteBuilder):
         p_75 = math.ceil(np.percentile(nums, 75))
         p_90 = math.ceil(np.percentile(nums, 90))
         count = len(nums)
-        _d = addict.Dict(
-            ('avg', avg),
-            ('median', median),
-            ('std', std),
-            ('max', _max),
-            ('min', _min),
-            ('p_10', p_10),
-            ('p_25', p_25),
-            ('p_75', p_75),
-            ('p_90', p_90),
-            ('count', count),
-        )
-        return _d
+        return addict.Dict(
+                    ('avg', avg),
+                    ('median', median),
+                    ('std', std),
+                    ('max', _max),
+                    ('min', _min),
+                    ('p_10', p_10),
+                    ('p_25', p_25),
+                    ('p_75', p_75),
+                    ('p_90', p_90),
+                    ('count', count),
+                )
 
     def __init__(self) -> None:
-        """Create a builder instance to build a Lyrics object."""
+        """Create a `LyricsBuilder`.
+        """
         self.reset()
 
     def reset(self) -> None:
@@ -518,3 +514,6 @@ class LyricsBuilder(LyricsConcreteBuilder):
             self.year_statistics = addict.Dict(
                 **self.year_statistics, **addict.Dict((year, _d))
             )
+
+if __name__ == "__main__":
+    pp(LyricsBuilder)
