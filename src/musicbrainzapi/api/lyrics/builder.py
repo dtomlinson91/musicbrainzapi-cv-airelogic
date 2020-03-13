@@ -91,17 +91,12 @@ class LyricsBuilder(LyricsConcreteBuilder):
     def construct_lyrics_url(artist: str, song: str) -> str:
         """Builds the URL for the lyrics api.
 
-        Parameters
-        ----------
-        artist : str
-            Artist
-        song : str
-            Track title
+        Args:
+            artist (str): Your chosen artist.
+            song (str): A song to find a lyrics url for.
 
-        Returns
-        -------
-        str
-            URL for lyrics from the lyrics api.
+        Returns:
+            str: The url of the lyrics api for chosen song.
 
         """
         lyrics_api_base = 'https://api.lyrics.ovh/v1'
