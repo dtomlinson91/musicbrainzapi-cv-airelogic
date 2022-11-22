@@ -30,7 +30,7 @@ packaging==20.1
 parso==0.6.2
 pathspec==0.7.0
 pbr==5.4.4
-pillow==7.0.0
+pillow==9.3.0
 pluggy==0.13.1
 progress==1.5
 pudb==2019.2
